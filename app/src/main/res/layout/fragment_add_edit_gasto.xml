@@ -43,7 +43,7 @@
             android:hint="@string/gasto_cantidad_hint"
             app:boxStrokeColor="@color/primary"
             app:hintTextColor="@color/primary"
-            app:prefixText="$"
+            app:suffixText="€"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tilNombre">

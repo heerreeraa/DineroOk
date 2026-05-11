@@ -47,7 +47,7 @@ class StatsFragment : Fragment() {
     private fun setupObservers() {
         // Observar total gastado
         viewModel.totalGastado.observe(viewLifecycleOwner) { total ->
-            val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
+            val format = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
             binding.tvTotalAmount.text = format.format(total ?: 0.0)
         }
 

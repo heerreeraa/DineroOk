@@ -43,8 +43,8 @@ class GastoAdapter(
                 // Nombre
                 tvNombre.text = gasto.nombre
 
-                // Cantidad formateada
-                val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
+                // Cantidad formateada en euros
+                val format = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
                 tvCantidad.text = format.format(gasto.cantidad)
 
                 // Categoría
