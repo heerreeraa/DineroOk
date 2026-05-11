@@ -23,14 +23,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sessionManager: SessionManager
     private lateinit var navController: NavController
+    private var currentMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Inicializar SessionManager
         sessionManager = SessionManager(this)
+
+        // Verificar si hay sesión activa, si no, ir a login
+        if (!sessionManager.isLoggedIn()) {
+            redirectToLogin()
+            return
+        }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Configurar Toolbar
         setSupportActionBar(binding.toolbar)
@@ -42,23 +50,69 @@ class MainActivity : AppCompatActivity() {
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Escuchar cambios de destino para mostrar/ocultar botones
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateMenuVisibility(destination.id)
+        }
+    }
+
+    /**
+     * Redirige a LoginActivity si no hay sesión
+     */
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+        currentMenu = menu
+        updateMenuVisibility(navController.currentDestination?.id ?: R.id.gastoListFragment)
         return true
+    }
+
+    /**
+     * Actualiza la visibilidad de los elementos del menú según el fragmento actual
+     */
+    private fun updateMenuVisibility(destinationId: Int) {
+        currentMenu?.let { menu ->
+            when (destinationId) {
+                R.id.gastoListFragment -> {
+                    // En la lista: mostrar añadir y stats
+                    menu.findItem(R.id.action_add_gasto)?.isVisible = true
+                    menu.findItem(R.id.action_stats)?.isVisible = true
+                }
+                R.id.statsFragment -> {
+                    // En estadísticas: ocultar añadir, ocultar stats
+                    menu.findItem(R.id.action_add_gasto)?.isVisible = false
+                    menu.findItem(R.id.action_stats)?.isVisible = false
+                }
+                R.id.addEditGastoFragment -> {
+                    // En añadir/editar: ocultar ambos
+                    menu.findItem(R.id.action_add_gasto)?.isVisible = false
+                    menu.findItem(R.id.action_stats)?.isVisible = false
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add_gasto -> {
-                // Navegar al fragment de agregar gasto
-                navController.navigate(R.id.action_gastoList_to_addEdit)
+                // Navegar al fragment de agregar gasto solo si estamos en la lista
+                if (navController.currentDestination?.id == R.id.gastoListFragment) {
+                    navController.navigate(R.id.action_gastoList_to_addEdit)
+                }
                 true
             }
             R.id.action_stats -> {
-                // Navegar a estadísticas
-                navController.navigate(R.id.action_gastoList_to_stats)
+                // Navegar a estadísticas solo si estamos en la lista
+                if (navController.currentDestination?.id == R.id.gastoListFragment) {
+                    navController.navigate(R.id.action_gastoList_to_stats)
+                }
                 true
             }
             R.id.action_logout -> {

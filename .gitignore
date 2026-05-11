@@ -190,4 +190,11 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+# Scripts de desarrollo
+*.sh
+!gradlew
+comandos_utiles.sh
+quick_build.sh
+clear_app_data.sh
+
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,kotlin,java,gradle

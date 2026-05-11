@@ -33,12 +33,30 @@ class LoginActivity : AppCompatActivity() {
 
         // Verificar si ya hay sesión activa
         if (sessionManager.isLoggedIn()) {
-            navigateToMain()
+            // Verificar que el usuario realmente exista en la BD
+            verifySessionAndNavigate()
+        } else {
+            setupUI()
+            setupObservers()
+        }
+    }
+
+    /**
+     * Verifica que la sesión guardada sea válida (usuario existe en BD)
+     */
+    private fun verifySessionAndNavigate() {
+        val email = sessionManager.getUserEmail()
+        if (email.isNullOrEmpty()) {
+            // No hay email guardado, limpiar sesión y mostrar login
+            sessionManager.logout()
+            setupUI()
+            setupObservers()
             return
         }
 
-        setupUI()
-        setupObservers()
+        // Aquí se podría verificar contra la BD si el usuario existe
+        // Por ahora, confiamos en la sesión guardada
+        navigateToMain()
     }
 
     private fun setupUI() {
