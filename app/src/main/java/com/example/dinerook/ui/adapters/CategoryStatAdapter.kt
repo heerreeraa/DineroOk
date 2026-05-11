@@ -44,8 +44,8 @@ class CategoryStatAdapter(
                 // Contador
                 tvCategoryCount.text = "${stat.count} gastos"
 
-                // Monto formateado en euros
-                val format = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
+                // Monto formateado
+                val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
                 tvCategoryAmount.text = format.format(stat.total)
 
                 // Barra de progreso
