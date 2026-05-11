@@ -1,0 +1,65 @@
+<resources>
+    <string name="app_name">Gestor de Gastos</string>
+
+    <!-- Login -->
+    <string name="login_title">Bienvenido</string>
+    <string name="login_subtitle">Gestiona tus gastos de manera inteligente</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="login_info">Usa cualquier email válido y contraseña (mínimo 4 caracteres)</string>
+    <string name="login_success">¡Bienvenido!</string>
+
+    <!-- Errores de validación -->
+    <string name="error_email_required">El email es requerido</string>
+    <string name="error_email_invalid">Email inválido</string>
+    <string name="error_password_required">La contraseña es requerida</string>
+    <string name="error_password_invalid">La contraseña debe tener al menos 4 caracteres</string>
+    <string name="error_field_required">Este campo es requerido</string>
+    <string name="error_amount_invalid">La cantidad debe ser mayor a 0</string>
+
+    <!-- Menu -->
+    <string name="menu_add_gasto">Agregar Gasto</string>
+    <string name="menu_logout">Cerrar Sesión</string>
+    <string name="menu_stats">Estadísticas</string>
+
+    <!-- Gastos -->
+    <string name="gastos_title">Mis Gastos</string>
+    <string name="gasto_add_title">Agregar Gasto</string>
+    <string name="gasto_edit_title">Editar Gasto</string>
+    <string name="gasto_nombre_hint">Nombre del gasto</string>
+    <string name="gasto_cantidad_hint">Cantidad</string>
+    <string name="gasto_categoria_hint">Categoría</string>
+    <string name="gasto_fecha_hint">Fecha</string>
+    <string name="gasto_save">Guardar</string>
+    <string name="gasto_cancel">Cancelar</string>
+    <string name="gasto_delete">Eliminar</string>
+    <string name="gasto_delete_confirm">¿Eliminar este gasto?</string>
+    <string name="gasto_delete_success">Gasto eliminado</string>
+    <string name="gasto_save_success">Gasto guardado</string>
+    <string name="gasto_update_success">Gasto actualizado</string>
+    <string name="no_gastos">No hay gastos registrados</string>
+
+    <!-- Categorías -->
+    <string name="categoria_alimentacion">Alimentación</string>
+    <string name="categoria_transporte">Transporte</string>
+    <string name="categoria_salud">Salud</string>
+    <string name="categoria_entretenimiento">Entretenimiento</string>
+    <string name="categoria_servicios">Servicios</string>
+    <string name="categoria_otros">Otros</string>
+
+    <!-- Estadísticas -->
+    <string name="stats_title">Estadísticas</string>
+    <string name="stats_total">Total Gastado</string>
+    <string name="stats_by_category">Por Categoría</string>
+    <string name="stats_count">Total de gastos: %d</string>
+
+    <!-- Botones -->
+    <string name="btn_yes">Sí</string>
+    <string name="btn_no">No</string>
+    <string name="btn_ok">OK</string>
+
+    <!-- Descripciones -->
+    <string name="desc_category_icon">Icono de categoría</string>
+</resources>
+

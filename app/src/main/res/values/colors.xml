@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores base -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores principales -->
+    <color name="primary">#D32F2F</color>
+    <color name="primary_dark">#B71C1C</color>
+    <color name="primary_light">#FFCDD2</color>
+
+    <color name="secondary">#43A047</color>
+    <color name="secondary_dark">#2E7D32</color>
+    <color name="secondary_light">#C8E6C9</color>
+
+    <!-- Colores de fondo -->
+    <color name="background">#FAFAFA</color>
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_dark">#F5F5F5</color>
+
+    <!-- Colores de texto -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+
+    <!-- Colores funcionales -->
+    <color name="success">#43A047</color>
+    <color name="error">#D32F2F</color>
+    <color name="warning">#FF6F00</color>
+
+    <!-- Categorías -->
+    <color name="cat_alimentacion">#FF5722</color>
+    <color name="cat_transporte">#2196F3</color>
+    <color name="cat_salud">#E91E63</color>
+    <color name="cat_entretenimiento">#9C27B0</color>
+    <color name="cat_servicios">#00BCD4</color>
+    <color name="cat_otros">#607D8B</color>
+</resources>
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/gastoListFragment">
+
+    <!-- Fragment de lista de gastos -->
+    <fragment
+        android:id="@+id/gastoListFragment"
+        android:name="com.example.dinerook.ui.fragments.GastoListFragment"
+        android:label="@string/gastos_title"
+        tools:layout="@layout/fragment_gasto_list">
+        <action
+            android:id="@+id/action_gastoList_to_addEdit"
+            app:destination="@id/addEditGastoFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_gastoList_to_stats"
+            app:destination="@id/statsFragment" />
+    </fragment>
+
+    <!-- Fragment para agregar/editar gasto -->
+    <fragment
+        android:id="@+id/addEditGastoFragment"
+        android:name="com.example.dinerook.ui.fragments.AddEditGastoFragment"
+        android:label="@string/gasto_add_title"
+        tools:layout="@layout/fragment_add_edit_gasto">
+        <argument
+            android:name="gastoId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Fragment de estadísticas -->
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.dinerook.ui.fragments.StatsFragment"
+        android:label="@string/stats_title"
+        tools:layout="@layout/fragment_stats" />
+
+</navigation>
+
