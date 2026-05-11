@@ -7,14 +7,25 @@
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Contraseña</string>
     <string name="login_button">Iniciar Sesión</string>
-    <string name="login_info">Usa cualquier email válido y contraseña (mínimo 4 caracteres)</string>
+    <string name="login_info">¿No tienes cuenta? Regístrate</string>
     <string name="login_success">¡Bienvenido!</string>
+    <string name="login_error">Email o contraseña incorrectos</string>
+
+    <!-- Registro -->
+    <string name="register_title">Crear Cuenta</string>
+    <string name="register_subtitle">Regístrate para empezar</string>
+    <string name="register_button">Registrarse</string>
+    <string name="register_info">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="register_success">¡Cuenta creada correctamente!</string>
+    <string name="register_error_exists">Este email ya está registrado</string>
+    <string name="register_confirm_password_hint">Confirmar Contraseña</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden</string>
 
     <!-- Errores de validación -->
     <string name="error_email_required">El email es requerido</string>
     <string name="error_email_invalid">Email inválido</string>
     <string name="error_password_required">La contraseña es requerida</string>
-    <string name="error_password_invalid">La contraseña debe tener al menos 4 caracteres</string>
+    <string name="error_password_invalid">La contraseña debe tener al menos 6 caracteres</string>
     <string name="error_field_required">Este campo es requerido</string>
     <string name="error_amount_invalid">La cantidad debe ser mayor a 0</string>
 

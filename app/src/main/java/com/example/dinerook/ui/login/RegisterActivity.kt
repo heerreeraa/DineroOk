@@ -6,79 +6,63 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dinerook.R
-import com.example.dinerook.databinding.ActivityLoginBinding
-import com.example.dinerook.ui.main.MainActivity
-import com.example.dinerook.utils.SessionManager
+import com.example.dinerook.databinding.ActivityRegisterBinding
 import com.example.dinerook.utils.Validator
 import com.example.dinerook.viewmodel.AuthResult
 import com.example.dinerook.viewmodel.AuthViewModel
 
 /**
- * Activity de Login
- * Gestiona la autenticación del usuario con validaciones
+ * Activity de Registro
+ * Permite crear nuevas cuentas de usuario
  */
-class LoginActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
-    private lateinit var sessionManager: SessionManager
+    private lateinit var binding: ActivityRegisterBinding
     private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Inicializar SessionManager
-        sessionManager = SessionManager(this)
-
-        // Verificar si ya hay sesión activa
-        if (sessionManager.isLoggedIn()) {
-            navigateToMain()
-            return
-        }
 
         setupUI()
         setupObservers()
     }
 
     private fun setupUI() {
-        binding.btnLogin.setOnClickListener {
-            attemptLogin()
+        binding.btnRegister.setOnClickListener {
+            attemptRegister()
         }
 
-        // Link para ir a registro
+        // Link para ir a login
         binding.tvInfo.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            finish() // Volver a LoginActivity
         }
     }
 
     private fun setupObservers() {
-        authViewModel.loginResult.observe(this) { result ->
+        authViewModel.registerResult.observe(this) { result ->
             when (result) {
                 is AuthResult.Success -> {
-                    val email = binding.etEmail.text.toString().trim()
-                    sessionManager.saveSession(email)
-                    Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show()
-                    navigateToMain()
+                    Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
+                    finish() // Volver a login
                 }
                 is AuthResult.Error -> {
-                    Toast.makeText(this, getString(R.string.login_error), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.register_error_exists), Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    /**
-     * Intenta realizar el login con validaciones
-     */
-    private fun attemptLogin() {
+    private fun attemptRegister() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
+        val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
         // Limpiar errores previos
         binding.tilEmail.error = null
         binding.tilPassword.error = null
+        binding.tilConfirmPassword.error = null
 
         var isValid = true
 
@@ -100,16 +84,19 @@ class LoginActivity : AppCompatActivity() {
             isValid = false
         }
 
+        // Validar confirmación de contraseña
+        if (Validator.isFieldEmpty(confirmPassword)) {
+            binding.tilConfirmPassword.error = getString(R.string.error_password_required)
+            isValid = false
+        } else if (password != confirmPassword) {
+            binding.tilConfirmPassword.error = getString(R.string.error_passwords_not_match)
+            isValid = false
+        }
+
         if (!isValid) return
 
-        // Intentar login con base de datos
-        authViewModel.login(email, password)
-    }
-
-    private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        // Intentar registro
+        authViewModel.register(email, password)
     }
 }
 

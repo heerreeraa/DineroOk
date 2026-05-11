@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.dinerook.R
 import com.example.dinerook.data.entity.Gasto
@@ -17,7 +16,6 @@ import com.example.dinerook.utils.CategoryHelper
 import com.example.dinerook.utils.Validator
 import com.example.dinerook.viewmodel.GastoViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -137,8 +135,9 @@ class AddEditGastoFragment : Fragment() {
      * Carga los datos del gasto en modo edición
      */
     private fun loadGasto() {
-        lifecycleScope.launch {
-            val gasto = viewModel.allGastos.value?.find { it.id == gastoId }
+        // Observar allGastos para obtener el gasto a editar
+        viewModel.allGastos.observe(viewLifecycleOwner) { gastos ->
+            val gasto = gastos.find { it.id == gastoId }
             gasto?.let {
                 binding.etNombre.setText(it.nombre)
                 binding.etCantidad.setText(it.cantidad.toString())

@@ -5,19 +5,22 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.dinerook.data.dao.GastoDao
+import com.example.dinerook.data.dao.UserDao
 import com.example.dinerook.data.entity.Gasto
+import com.example.dinerook.data.entity.User
 
 /**
  * Base de datos principal de la aplicación
  */
 @Database(
-    entities = [Gasto::class],
-    version = 1,
+    entities = [Gasto::class, User::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun gastoDao(): GastoDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile

@@ -57,5 +57,12 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
     fun getGastosByCategoria(categoria: String): LiveData<List<Gasto>> {
         return repository.getGastosByCategoria(categoria)
     }
+
+    /**
+     * Obtiene un gasto por su ID
+     */
+    suspend fun getGastoById(id: Int): Gasto? {
+        return repository.getGastoById(id)
+    }
 }
 

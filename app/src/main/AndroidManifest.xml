@@ -23,6 +23,12 @@
             </intent-filter>
         </activity>
 
+        <!-- RegisterActivity para crear cuenta -->
+        <activity
+            android:name=".ui.login.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.DineroOk.NoActionBar" />
+
         <!-- MainActivity con fragments -->
         <activity
             android:name=".ui.main.MainActivity"

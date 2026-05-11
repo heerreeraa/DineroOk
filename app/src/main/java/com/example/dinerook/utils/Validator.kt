@@ -36,11 +36,11 @@ object Validator {
     }
 
     /**
-     * Valida contraseña (mínimo 4 caracteres para pruebas)
+     * Valida contraseña (mínimo 6 caracteres)
      */
     fun isValidPassword(password: String?): Boolean {
         if (password.isNullOrBlank()) return false
-        return password.length >= 4
+        return password.length >= 6
     }
 }
 
