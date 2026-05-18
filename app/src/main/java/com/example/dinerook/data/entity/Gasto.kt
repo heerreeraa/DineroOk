@@ -15,6 +15,7 @@ data class Gasto(
     val nombre: String,
     val cantidad: Double,
     val categoria: String,
-    val fecha: String
+    val fecha: String,
+    val userEmail: String // Email del usuario propietario del gasto
 )
 

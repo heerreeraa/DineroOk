@@ -10,10 +10,26 @@ import com.example.dinerook.data.entity.Gasto
  */
 class GastoRepository(private val gastoDao: GastoDao) {
 
-    // LiveData que se actualiza automáticamente
-    val allGastos: LiveData<List<Gasto>> = gastoDao.getAllGastos()
-    val totalGastado: LiveData<Double?> = gastoDao.getTotalGastado()
-    val gastosCount: LiveData<Int> = gastoDao.getGastosCount()
+    /**
+     * Obtiene todos los gastos de un usuario
+     */
+    fun getAllGastosByUser(userEmail: String): LiveData<List<Gasto>> {
+        return gastoDao.getAllGastosByUser(userEmail)
+    }
+
+    /**
+     * Obtiene el total gastado por un usuario
+     */
+    fun getTotalGastadoByUser(userEmail: String): LiveData<Double?> {
+        return gastoDao.getTotalGastadoByUser(userEmail)
+    }
+
+    /**
+     * Obtiene el conteo de gastos de un usuario
+     */
+    fun getGastosCountByUser(userEmail: String): LiveData<Int> {
+        return gastoDao.getGastosCountByUser(userEmail)
+    }
 
     /**
      * Inserta un nuevo gasto
@@ -37,17 +53,17 @@ class GastoRepository(private val gastoDao: GastoDao) {
     }
 
     /**
-     * Obtiene un gasto por ID
+     * Obtiene un gasto por ID y usuario
      */
-    suspend fun getGastoById(id: Int): Gasto? {
-        return gastoDao.getGastoById(id)
+    suspend fun getGastoById(id: Int, userEmail: String): Gasto? {
+        return gastoDao.getGastoById(id, userEmail)
     }
 
     /**
-     * Obtiene gastos por categoría
+     * Obtiene gastos por categoría y usuario
      */
-    fun getGastosByCategoria(categoria: String): LiveData<List<Gasto>> {
-        return gastoDao.getGastosByCategoria(categoria)
+    fun getGastosByCategoria(categoria: String, userEmail: String): LiveData<List<Gasto>> {
+        return gastoDao.getGastosByCategoria(categoria, userEmail)
     }
 }
 

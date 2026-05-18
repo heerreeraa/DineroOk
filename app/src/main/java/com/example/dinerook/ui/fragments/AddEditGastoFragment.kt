@@ -134,11 +134,14 @@ class AddEditGastoFragment : Fragment() {
     /**
      * Carga los datos del gasto en modo edición
      */
+    private var currentGasto: Gasto? = null
+
     private fun loadGasto() {
         // Observar allGastos para obtener el gasto a editar
         viewModel.allGastos.observe(viewLifecycleOwner) { gastos ->
             val gasto = gastos.find { it.id == gastoId }
             gasto?.let {
+                currentGasto = it
                 binding.etNombre.setText(it.nombre)
                 binding.etCantidad.setText(it.cantidad.toString())
                 binding.spinnerCategoria.setText(it.categoria, false)
@@ -207,14 +210,19 @@ class AddEditGastoFragment : Fragment() {
         val categoria = binding.spinnerCategoria.text.toString().trim()
         val fecha = binding.etFecha.text.toString().trim()
 
-        if (isEditMode) {
-            // Actualizar gasto existente
-            val gasto = Gasto(gastoId, nombre, cantidad, categoria, fecha)
+        if (isEditMode && currentGasto != null) {
+            // Actualizar gasto existente manteniendo el userEmail original
+            val gasto = currentGasto!!.copy(
+                nombre = nombre,
+                cantidad = cantidad,
+                categoria = categoria,
+                fecha = fecha
+            )
             viewModel.updateGasto(gasto)
             showMessage(getString(R.string.gasto_update_success))
         } else {
-            // Crear nuevo gasto
-            val gasto = Gasto(0, nombre, cantidad, categoria, fecha)
+            // Crear nuevo gasto (el ViewModel añadirá el userEmail automáticamente)
+            val gasto = Gasto(0, nombre, cantidad, categoria, fecha, "")
             viewModel.insertGasto(gasto)
             showMessage(getString(R.string.gasto_save_success))
         }

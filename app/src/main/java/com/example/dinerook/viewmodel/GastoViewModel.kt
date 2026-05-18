@@ -3,10 +3,13 @@ package com.example.dinerook.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.dinerook.data.database.AppDatabase
 import com.example.dinerook.data.entity.Gasto
 import com.example.dinerook.data.repository.GastoRepository
+import com.example.dinerook.utils.SessionManager
 import kotlinx.coroutines.launch
 
 /**
@@ -16,8 +19,12 @@ import kotlinx.coroutines.launch
 class GastoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: GastoRepository
+    private val sessionManager: SessionManager = SessionManager(application)
 
-    // LiveData observables
+    // Email del usuario actual
+    private val currentUserEmail = MutableLiveData<String>()
+
+    // LiveData observables que se actualizan según el usuario
     val allGastos: LiveData<List<Gasto>>
     val totalGastado: LiveData<Double?>
     val gastosCount: LiveData<Int>
@@ -25,23 +32,47 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val gastoDao = AppDatabase.getDatabase(application).gastoDao()
         repository = GastoRepository(gastoDao)
-        allGastos = repository.allGastos
-        totalGastado = repository.totalGastado
-        gastosCount = repository.gastosCount
+
+        // Establecer el email del usuario actual
+        currentUserEmail.value = sessionManager.getUserEmail() ?: ""
+
+        // Usar switchMap para que los LiveData se actualicen cuando cambie el usuario
+        allGastos = currentUserEmail.switchMap { email ->
+            repository.getAllGastosByUser(email)
+        }
+
+        totalGastado = currentUserEmail.switchMap { email ->
+            repository.getTotalGastadoByUser(email)
+        }
+
+        gastosCount = currentUserEmail.switchMap { email ->
+            repository.getGastosCountByUser(email)
+        }
     }
 
     /**
-     * Inserta un nuevo gasto
+     * Actualiza el usuario actual (útil cuando cambia la sesión)
+     */
+    fun refreshCurrentUser() {
+        currentUserEmail.value = sessionManager.getUserEmail() ?: ""
+    }
+
+    /**
+     * Inserta un nuevo gasto para el usuario actual
      */
     fun insertGasto(gasto: Gasto) = viewModelScope.launch {
-        repository.insertGasto(gasto)
+        val userEmail = sessionManager.getUserEmail() ?: return@launch
+        val gastoConUsuario = gasto.copy(userEmail = userEmail)
+        repository.insertGasto(gastoConUsuario)
     }
 
     /**
      * Actualiza un gasto existente
      */
     fun updateGasto(gasto: Gasto) = viewModelScope.launch {
-        repository.updateGasto(gasto)
+        val userEmail = sessionManager.getUserEmail() ?: return@launch
+        val gastoConUsuario = gasto.copy(userEmail = userEmail)
+        repository.updateGasto(gastoConUsuario)
     }
 
     /**
@@ -52,17 +83,19 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Obtiene gastos por categoría
+     * Obtiene gastos por categoría del usuario actual
      */
     fun getGastosByCategoria(categoria: String): LiveData<List<Gasto>> {
-        return repository.getGastosByCategoria(categoria)
+        val userEmail = sessionManager.getUserEmail() ?: ""
+        return repository.getGastosByCategoria(categoria, userEmail)
     }
 
     /**
-     * Obtiene un gasto por su ID
+     * Obtiene un gasto por su ID del usuario actual
      */
     suspend fun getGastoById(id: Int): Gasto? {
-        return repository.getGastoById(id)
+        val userEmail = sessionManager.getUserEmail() ?: return null
+        return repository.getGastoById(id, userEmail)
     }
 }
 
