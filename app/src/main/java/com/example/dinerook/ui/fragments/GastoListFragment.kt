@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,19 +15,31 @@ import com.example.dinerook.R
 import com.example.dinerook.data.entity.Gasto
 import com.example.dinerook.databinding.FragmentGastoListBinding
 import com.example.dinerook.ui.adapters.GastoAdapter
+import com.example.dinerook.ui.main.SortToggleListener
 import com.example.dinerook.viewmodel.GastoViewModel
 import com.google.android.material.snackbar.Snackbar
 
 /**
  * Fragment que muestra la lista de gastos
  */
-class GastoListFragment : Fragment() {
+class GastoListFragment : Fragment(), SortToggleListener {
 
     private var _binding: FragmentGastoListBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: GastoViewModel by viewModels()
     private lateinit var adapter: GastoAdapter
+
+    // Lista original de gastos para ordenar
+    private var currentGastos: List<Gasto> = emptyList()
+
+    // Tipo de ordenación actual
+    private enum class SortType { DATE, CATEGORY, AMOUNT }
+    private var currentSortType = SortType.DATE
+    private var isAscending = false  // false = descendente (por defecto)
+
+    // Estado del menú de ordenación
+    private var isSortMenuVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +54,31 @@ class GastoListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupSortButtons()
         setupObservers()
         setupListeners()
+
+        // Ocultar menú de ordenación por defecto
+        binding.layoutSort.isVisible = false
+        isSortMenuVisible = false
+    }
+
+    /**
+     * Implementación de SortToggleListener - Toggle del menú de ordenación
+     */
+    override fun toggleSortMenu() {
+        if (currentGastos.isEmpty()) return
+
+        isSortMenuVisible = !isSortMenuVisible
+        binding.layoutSort.isVisible = isSortMenuVisible
+
+        if (!isSortMenuVisible) {
+            // Al cerrar, volver al orden por defecto (fecha descendente)
+            currentSortType = SortType.DATE
+            isAscending = false
+            updateSortUI()
+            applySorting()
+        }
     }
 
     /**
@@ -63,6 +100,92 @@ class GastoListFragment : Fragment() {
     }
 
     /**
+     * Configura los botones de ordenación
+     */
+    private fun setupSortButtons() {
+        binding.tvSortDate.setOnClickListener {
+            onSortClicked(SortType.DATE)
+        }
+
+        binding.tvSortCategory.setOnClickListener {
+            onSortClicked(SortType.CATEGORY)
+        }
+
+        binding.tvSortAmount.setOnClickListener {
+            onSortClicked(SortType.AMOUNT)
+        }
+    }
+
+    /**
+     * Maneja el click en un botón de ordenación
+     */
+    private fun onSortClicked(sortType: SortType) {
+        if (currentSortType == sortType) {
+            // Si es el mismo tipo, cambiar dirección
+            isAscending = !isAscending
+        } else {
+            // Si es diferente tipo, seleccionar y poner descendente por defecto
+            currentSortType = sortType
+            isAscending = false
+        }
+        updateSortUI()
+        applySorting()
+    }
+
+    /**
+     * Actualiza la UI de los botones de ordenación
+     */
+    private fun updateSortUI() {
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.primary)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+        val arrowUp = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_up)
+        val arrowDown = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_down)
+
+        // Resetear todos a inactivo
+        listOf(binding.tvSortDate, binding.tvSortCategory, binding.tvSortAmount).forEach { tv ->
+            tv.setTextColor(inactiveColor)
+            tv.setTypeface(null, android.graphics.Typeface.NORMAL)
+            val inactiveArrow = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_down)
+            inactiveArrow?.setTint(inactiveColor)
+            tv.setCompoundDrawablesWithIntrinsicBounds(null, null, inactiveArrow, null)
+        }
+
+        // Activar el seleccionado
+        val activeView: TextView = when (currentSortType) {
+            SortType.DATE -> binding.tvSortDate
+            SortType.CATEGORY -> binding.tvSortCategory
+            SortType.AMOUNT -> binding.tvSortAmount
+        }
+
+        activeView.setTextColor(activeColor)
+        activeView.setTypeface(null, android.graphics.Typeface.BOLD)
+        val arrow = if (isAscending) arrowUp?.mutate() else arrowDown?.mutate()
+        arrow?.setTint(activeColor)
+        activeView.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null)
+    }
+
+    /**
+     * Aplica la ordenación según el tipo seleccionado
+     */
+    private fun applySorting() {
+        val sortedList = when (currentSortType) {
+            SortType.DATE -> {
+                if (isAscending) currentGastos.sortedBy { it.fecha }
+                else currentGastos.sortedByDescending { it.fecha }
+            }
+            SortType.CATEGORY -> {
+                if (isAscending) currentGastos.sortedBy { it.categoria }
+                else currentGastos.sortedByDescending { it.categoria }
+            }
+            SortType.AMOUNT -> {
+                if (isAscending) currentGastos.sortedBy { it.cantidad }
+                else currentGastos.sortedByDescending { it.cantidad }
+            }
+        }
+        adapter.submitList(sortedList)
+    }
+
+    /**
      * Observa cambios en el ViewModel
      */
     private fun setupObservers() {
@@ -70,11 +193,23 @@ class GastoListFragment : Fragment() {
             // Ocultar loading
             binding.progressBar.isVisible = false
 
-            adapter.submitList(gastos)
+            // Guardar lista original
+            currentGastos = gastos
 
-            // Mostrar/ocultar mensaje de lista vacía
+            // Mostrar/ocultar lista vacía
             binding.layoutEmpty.isVisible = gastos.isEmpty()
             binding.rvGastos.isVisible = gastos.isNotEmpty()
+
+            // Si no hay gastos, ocultar menú de ordenación
+            if (gastos.isEmpty()) {
+                binding.layoutSort.isVisible = false
+                isSortMenuVisible = false
+            }
+
+            // Aplicar ordenación actual (por defecto fecha desc)
+            if (gastos.isNotEmpty()) {
+                applySorting()
+            }
         }
     }
 

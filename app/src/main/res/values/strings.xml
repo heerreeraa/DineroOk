@@ -33,6 +33,7 @@
     <string name="menu_add_gasto">Agregar Gasto</string>
     <string name="menu_logout">Cerrar Sesión</string>
     <string name="menu_stats">Estadísticas</string>
+    <string name="menu_sort">Ordenar</string>
 
     <!-- Gastos -->
     <string name="gastos_title">Mis Gastos</string>
@@ -51,6 +52,11 @@
     <string name="gasto_save_success">Gasto guardado</string>
     <string name="gasto_update_success">Gasto actualizado</string>
     <string name="no_gastos">No hay gastos registrados</string>
+
+    <!-- Ordenación -->
+    <string name="sort_by_date">Fecha</string>
+    <string name="sort_by_category">Categoría</string>
+    <string name="sort_by_amount">Cantidad</string>
 
     <!-- Categorías -->
     <string name="categoria_alimentacion">Alimentación</string>

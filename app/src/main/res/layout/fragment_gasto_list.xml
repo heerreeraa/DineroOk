@@ -7,6 +7,61 @@
     android:background="@color/background"
     tools:context=".ui.fragments.GastoListFragment">
 
+    <!-- Barra de ordenación sin fondo -->
+    <LinearLayout
+        android:id="@+id/layoutSort"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvSortDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:drawablePadding="4dp"
+            android:padding="8dp"
+            android:text="@string/sort_by_date"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:drawableEndCompat="@drawable/ic_arrow_down" />
+
+        <TextView
+            android:id="@+id/tvSortCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:drawablePadding="4dp"
+            android:padding="8dp"
+            android:text="@string/sort_by_category"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:drawableEndCompat="@drawable/ic_arrow_down" />
+
+        <TextView
+            android:id="@+id/tvSortAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:drawablePadding="4dp"
+            android:padding="8dp"
+            android:text="@string/sort_by_amount"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:drawableEndCompat="@drawable/ic_arrow_down" />
+
+    </LinearLayout>
+
     <!-- Loading indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
@@ -32,7 +87,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSort"
         tools:listitem="@layout/item_gasto" />
 
     <!-- Mensaje cuando no hay gastos -->
@@ -80,4 +135,5 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 

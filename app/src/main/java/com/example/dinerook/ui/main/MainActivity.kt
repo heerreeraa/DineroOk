@@ -16,6 +16,13 @@ import com.example.dinerook.ui.login.LoginActivity
 import com.example.dinerook.utils.SessionManager
 
 /**
+ * Interface para comunicar con el fragment de lista de gastos
+ */
+interface SortToggleListener {
+    fun toggleSortMenu()
+}
+
+/**
  * Activity principal que contiene los fragments
  */
 class MainActivity : AppCompatActivity() {
@@ -81,18 +88,21 @@ class MainActivity : AppCompatActivity() {
         currentMenu?.let { menu ->
             when (destinationId) {
                 R.id.gastoListFragment -> {
-                    // En la lista: mostrar añadir y stats
+                    // En la lista: mostrar añadir, ordenar y stats
                     menu.findItem(R.id.action_add_gasto)?.isVisible = true
+                    menu.findItem(R.id.action_sort)?.isVisible = true
                     menu.findItem(R.id.action_stats)?.isVisible = true
                 }
                 R.id.statsFragment -> {
-                    // En estadísticas: ocultar añadir, ocultar stats
+                    // En estadísticas: ocultar todos menos logout
                     menu.findItem(R.id.action_add_gasto)?.isVisible = false
+                    menu.findItem(R.id.action_sort)?.isVisible = false
                     menu.findItem(R.id.action_stats)?.isVisible = false
                 }
                 R.id.addEditGastoFragment -> {
-                    // En añadir/editar: ocultar ambos
+                    // En añadir/editar: ocultar todos menos logout
                     menu.findItem(R.id.action_add_gasto)?.isVisible = false
+                    menu.findItem(R.id.action_sort)?.isVisible = false
                     menu.findItem(R.id.action_stats)?.isVisible = false
                 }
             }
@@ -105,6 +115,18 @@ class MainActivity : AppCompatActivity() {
                 // Navegar al fragment de agregar gasto solo si estamos en la lista
                 if (navController.currentDestination?.id == R.id.gastoListFragment) {
                     navController.navigate(R.id.action_gastoList_to_addEdit)
+                }
+                true
+            }
+            R.id.action_sort -> {
+                // Mostrar/ocultar menú de ordenación
+                if (navController.currentDestination?.id == R.id.gastoListFragment) {
+                    val navHostFragment = supportFragmentManager
+                        .findFragmentById(R.id.fragmentContainer) as NavHostFragment
+                    val currentFragment = navHostFragment.childFragmentManager.fragments.firstOrNull()
+                    if (currentFragment is SortToggleListener) {
+                        currentFragment.toggleSortMenu()
+                    }
                 }
                 true
             }
