@@ -22,14 +22,19 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _registerResult = MutableLiveData<AuthResult>()
     val registerResult: LiveData<AuthResult> = _registerResult
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     init {
         val userDao = AppDatabase.getDatabase(application).userDao()
         repository = UserRepository(userDao)
     }
 
     fun login(email: String, password: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             val user = repository.login(email, password)
+            _isLoading.value = false
             if (user != null) {
                 _loginResult.value = AuthResult.Success
             } else {
@@ -39,8 +44,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun register(email: String, password: String) {
+        _isLoading.value = true
         viewModelScope.launch {
             val success = repository.registerUser(email, password)
+            _isLoading.value = false
             if (success) {
                 _registerResult.value = AuthResult.Success
             } else {

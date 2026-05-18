@@ -67,6 +67,9 @@ class GastoListFragment : Fragment() {
      */
     private fun setupObservers() {
         viewModel.allGastos.observe(viewLifecycleOwner) { gastos ->
+            // Ocultar loading
+            binding.progressBar.isVisible = false
+
             adapter.submitList(gastos)
 
             // Mostrar/ocultar mensaje de lista vacía
@@ -121,15 +124,32 @@ class GastoListFragment : Fragment() {
     }
 
     /**
-     * Elimina un gasto y muestra mensaje
+     * Elimina un gasto y muestra mensaje con opción de deshacer
      */
     private fun deleteGasto(gasto: Gasto) {
         viewModel.deleteGasto(gasto)
+
         Snackbar.make(
             binding.root,
             getString(R.string.gasto_delete_success),
-            Snackbar.LENGTH_SHORT
-        ).show()
+            Snackbar.LENGTH_LONG
+        )
+        .setBackgroundTint(requireContext().getColor(R.color.error))
+        .setTextColor(requireContext().getColor(R.color.white))
+        .setAction("Deshacer") {
+            // Restaurar el gasto eliminado
+            viewModel.insertGasto(gasto)
+            Snackbar.make(
+                binding.root,
+                getString(R.string.gasto_restored),
+                Snackbar.LENGTH_SHORT
+            )
+            .setBackgroundTint(requireContext().getColor(R.color.success))
+            .setTextColor(requireContext().getColor(R.color.white))
+            .show()
+        }
+        .setActionTextColor(requireContext().getColor(R.color.white))
+        .show()
     }
 
     override fun onDestroyView() {

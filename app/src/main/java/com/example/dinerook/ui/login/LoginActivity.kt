@@ -72,6 +72,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
+        // Observar estado de loading
+        authViewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+            binding.btnLogin.isEnabled = !isLoading
+            binding.btnLogin.text = if (isLoading) "" else getString(R.string.login_button)
+        }
+
         authViewModel.loginResult.observe(this) { result ->
             when (result) {
                 is AuthResult.Success -> {
@@ -81,7 +88,17 @@ class LoginActivity : AppCompatActivity() {
                     navigateToMain()
                 }
                 is AuthResult.Error -> {
-                    Toast.makeText(this, getString(R.string.login_error), Toast.LENGTH_SHORT).show()
+                    // Mostrar Snackbar con opción de reintentar
+                    com.google.android.material.snackbar.Snackbar.make(
+                        binding.root,
+                        getString(R.string.login_error),
+                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                    ).setAction("Reintentar") {
+                        attemptLogin()
+                    }.setBackgroundTint(getColor(R.color.error))
+                    .setTextColor(getColor(R.color.white))
+                    .setActionTextColor(getColor(R.color.white))
+                    .show()
                 }
             }
         }

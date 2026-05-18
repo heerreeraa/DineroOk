@@ -47,6 +47,7 @@
     <string name="gasto_delete">Eliminar</string>
     <string name="gasto_delete_confirm">¿Eliminar este gasto?</string>
     <string name="gasto_delete_success">Gasto eliminado</string>
+    <string name="gasto_restored">Gasto restaurado</string>
     <string name="gasto_save_success">Gasto guardado</string>
     <string name="gasto_update_success">Gasto actualizado</string>
     <string name="no_gastos">No hay gastos registrados</string>

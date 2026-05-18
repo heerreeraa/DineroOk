@@ -205,6 +205,11 @@ class AddEditGastoFragment : Fragment() {
      * Guarda el gasto (crear o actualizar)
      */
     private fun saveGasto() {
+        // Mostrar loading
+        binding.progressBar.visibility = android.view.View.VISIBLE
+        binding.btnSave.isEnabled = false
+        binding.btnSave.text = ""
+
         val nombre = binding.etNombre.text.toString().trim()
         val cantidad = binding.etCantidad.text.toString().trim().toDouble()
         val categoria = binding.spinnerCategoria.text.toString().trim()
@@ -219,23 +224,38 @@ class AddEditGastoFragment : Fragment() {
                 fecha = fecha
             )
             viewModel.updateGasto(gasto)
-            showMessage(getString(R.string.gasto_update_success))
+            showSuccessMessage(getString(R.string.gasto_update_success))
         } else {
             // Crear nuevo gasto (el ViewModel añadirá el userEmail automáticamente)
             val gasto = Gasto(0, nombre, cantidad, categoria, fecha, "")
             viewModel.insertGasto(gasto)
-            showMessage(getString(R.string.gasto_save_success))
+            showSuccessMessage(getString(R.string.gasto_save_success))
         }
 
-        // Volver atrás
-        findNavController().navigateUp()
+        // Volver atrás después de un pequeño delay para que se vea el feedback
+        binding.root.postDelayed({
+            findNavController().navigateUp()
+        }, 500)
     }
 
     /**
-     * Muestra un mensaje al usuario
+     * Muestra un mensaje de éxito al usuario con estilo verde
      */
-    private fun showMessage(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    private fun showSuccessMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
+            .setBackgroundTint(requireContext().getColor(R.color.success))
+            .setTextColor(requireContext().getColor(R.color.white))
+            .show()
+    }
+
+    /**
+     * Muestra un mensaje de error al usuario con estilo rojo
+     */
+    private fun showErrorMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setBackgroundTint(requireContext().getColor(R.color.error))
+            .setTextColor(requireContext().getColor(R.color.white))
+            .show()
     }
 
     override fun onDestroyView() {

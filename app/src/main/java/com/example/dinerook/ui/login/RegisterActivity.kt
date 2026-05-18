@@ -41,14 +41,39 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
+        // Observar estado de loading
+        authViewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+            binding.btnRegister.isEnabled = !isLoading
+            binding.btnRegister.text = if (isLoading) "" else getString(R.string.register_button)
+        }
+
         authViewModel.registerResult.observe(this) { result ->
             when (result) {
                 is AuthResult.Success -> {
-                    Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
-                    finish() // Volver a login
+                    // Mostrar Snackbar de éxito antes de volver
+                    com.google.android.material.snackbar.Snackbar.make(
+                        binding.root,
+                        getString(R.string.register_success),
+                        com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                    ).setBackgroundTint(getColor(R.color.success))
+                    .setTextColor(getColor(R.color.white))
+                    .addCallback(object : com.google.android.material.snackbar.Snackbar.Callback() {
+                        override fun onDismissed(transientBottomBar: com.google.android.material.snackbar.Snackbar?, event: Int) {
+                            finish() // Volver a login después del Snackbar
+                        }
+                    })
+                    .show()
                 }
                 is AuthResult.Error -> {
-                    Toast.makeText(this, getString(R.string.register_error_exists), Toast.LENGTH_SHORT).show()
+                    // Mostrar Snackbar con error
+                    com.google.android.material.snackbar.Snackbar.make(
+                        binding.root,
+                        getString(R.string.register_error_exists),
+                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                    ).setBackgroundTint(getColor(R.color.error))
+                    .setTextColor(getColor(R.color.white))
+                    .show()
                 }
             }
         }
