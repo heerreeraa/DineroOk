@@ -17,9 +17,12 @@ import com.example.dinerook.ui.adapters.CategoryStatAdapter
 import com.example.dinerook.utils.CategoryHelper
 import com.example.dinerook.viewmodel.GastoViewModel
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import java.util.Locale
 
 /**
@@ -31,6 +34,12 @@ class StatsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: GastoViewModel by viewModels()
+
+    // Lista completa de estadísticas para filtrar
+    private var allCategoryStats: List<CategoryStat> = emptyList()
+
+    // Categoría actualmente seleccionada (null = todas)
+    private var selectedCategory: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,10 +91,39 @@ class StatsFragment : Fragment() {
             // Configurar rotación
             rotationAngle = 0f
             isRotationEnabled = true
-            isHighlightPerTapEnabled = false  // Deshabilitar highlight al pulsar
+            isHighlightPerTapEnabled = true  // Habilitar highlight al pulsar
 
             // Animación
             animateY(1000, Easing.EaseInOutQuad)
+
+            // Listener para detectar clicks en el gráfico
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e is PieEntry) {
+                        // Extraer nombre de categoría (quitar el porcentaje)
+                        val label = e.label
+                        val categoryName = label.substringBefore(" (")
+
+                        if (selectedCategory == categoryName) {
+                            // Si ya está seleccionada, deseleccionar y mostrar todas
+                            selectedCategory = null
+                            binding.pieChart.highlightValue(null)
+                            updateCategoryList(allCategoryStats)
+                        } else {
+                            // Seleccionar esta categoría y filtrar
+                            selectedCategory = categoryName
+                            val filtered = allCategoryStats.filter { it.categoria == categoryName }
+                            updateCategoryList(filtered)
+                        }
+                    }
+                }
+
+                override fun onNothingSelected() {
+                    // Mostrar todas las categorías
+                    selectedCategory = null
+                    updateCategoryList(allCategoryStats)
+                }
+            })
         }
     }
 
@@ -139,14 +177,22 @@ class StatsFragment : Fragment() {
         binding.tvTotalCount.isVisible = true
         binding.tvCategoriesTitle.isVisible = true
 
-        val categoryStats = calculateCategoryStats(gastos)
+        allCategoryStats = calculateCategoryStats(gastos)
+        selectedCategory = null
 
         // Actualizar RecyclerView
-        val adapter = CategoryStatAdapter(categoryStats)
-        binding.rvCategoryStats.adapter = adapter
+        updateCategoryList(allCategoryStats)
 
         // Actualizar PieChart
-        updatePieChart(categoryStats)
+        updatePieChart(allCategoryStats)
+    }
+
+    /**
+     * Actualiza la lista de categorías en el RecyclerView
+     */
+    private fun updateCategoryList(stats: List<CategoryStat>) {
+        val adapter = CategoryStatAdapter(stats)
+        binding.rvCategoryStats.adapter = adapter
     }
 
     /**
