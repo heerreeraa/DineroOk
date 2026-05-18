@@ -52,19 +52,6 @@
             app:layout_constraintStart_toStartOf="@id/tvCategoryName"
             app:layout_constraintTop_toBottomOf="@id/tvCategoryName" />
 
-        <!-- Barra de progreso -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progressTint="@color/primary"
-            tools:progress="60"
-            app:layout_constraintEnd_toEndOf="@id/tvCategoryName"
-            app:layout_constraintStart_toStartOf="@id/tvCategoryName"
-            app:layout_constraintTop_toBottomOf="@id/tvCategoryCount" />
 
         <!-- Monto total de categoría -->
         <TextView

@@ -1,9 +1,11 @@
 package com.example.dinerook.ui.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,12 +14,16 @@ import com.example.dinerook.data.entity.CategoryStat
 import com.example.dinerook.data.entity.Gasto
 import com.example.dinerook.databinding.FragmentStatsBinding
 import com.example.dinerook.ui.adapters.CategoryStatAdapter
+import com.example.dinerook.utils.CategoryHelper
 import com.example.dinerook.viewmodel.GastoViewModel
-import java.text.NumberFormat
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import java.util.Locale
 
 /**
- * Fragment que muestra estadísticas de gastos
+ * Fragment que muestra estadísticas de gastos con gráfico circular
  */
 class StatsFragment : Fragment() {
 
@@ -38,7 +44,49 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupPieChart()
         setupObservers()
+    }
+
+    /**
+     * Configura el aspecto inicial del PieChart
+     */
+    private fun setupPieChart() {
+        binding.pieChart.apply {
+            setUsePercentValues(true)
+            description.isEnabled = false
+            setExtraOffsets(5f, 10f, 5f, 5f)
+
+            // Configurar el agujero central
+            isDrawHoleEnabled = true
+            setHoleColor(Color.TRANSPARENT)
+            holeRadius = 55f
+            transparentCircleRadius = 60f
+
+            // Deshabilitar etiquetas en el centro
+            setDrawCenterText(false)
+            setDrawEntryLabels(false)
+
+            // Configurar leyenda multilinea
+            legend.isEnabled = true
+            legend.textSize = 11f
+            legend.textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
+            legend.isWordWrapEnabled = true
+            legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+            legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+            legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            legend.setDrawInside(false)
+            legend.xEntrySpace = 10f
+            legend.yEntrySpace = 5f
+
+            // Configurar rotación
+            rotationAngle = 0f
+            isRotationEnabled = true
+            isHighlightPerTapEnabled = false  // Deshabilitar highlight al pulsar
+
+            // Animación
+            animateY(1000, Easing.EaseInOutQuad)
+        }
     }
 
     /**
@@ -47,8 +95,8 @@ class StatsFragment : Fragment() {
     private fun setupObservers() {
         // Observar total gastado
         viewModel.totalGastado.observe(viewLifecycleOwner) { total ->
-            val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
-            binding.tvTotalAmount.text = format.format(total ?: 0.0)
+            val amount = String.format(Locale.getDefault(), "%.2f €", total ?: 0.0)
+            binding.tvTotalAmount.text = amount
         }
 
         // Observar cantidad de gastos
@@ -72,6 +120,11 @@ class StatsFragment : Fragment() {
     private fun showEmptyState() {
         binding.layoutEmpty.isVisible = true
         binding.rvCategoryStats.isVisible = false
+        binding.pieChart.isVisible = false
+        binding.tvTotalLabel.isVisible = false
+        binding.tvTotalAmount.isVisible = false
+        binding.tvTotalCount.isVisible = false
+        binding.tvCategoriesTitle.isVisible = false
     }
 
     /**
@@ -80,10 +133,51 @@ class StatsFragment : Fragment() {
     private fun showStats(gastos: List<Gasto>) {
         binding.layoutEmpty.isVisible = false
         binding.rvCategoryStats.isVisible = true
+        binding.pieChart.isVisible = true
+        binding.tvTotalLabel.isVisible = true
+        binding.tvTotalAmount.isVisible = true
+        binding.tvTotalCount.isVisible = true
+        binding.tvCategoriesTitle.isVisible = true
 
         val categoryStats = calculateCategoryStats(gastos)
+
+        // Actualizar RecyclerView
         val adapter = CategoryStatAdapter(categoryStats)
         binding.rvCategoryStats.adapter = adapter
+
+        // Actualizar PieChart
+        updatePieChart(categoryStats)
+    }
+
+    /**
+     * Actualiza el gráfico circular con los datos
+     */
+    private fun updatePieChart(stats: List<CategoryStat>) {
+        val entries = ArrayList<PieEntry>()
+        val colors = ArrayList<Int>()
+
+        stats.forEach { stat ->
+            // Añadir nombre de categoría con porcentaje para la leyenda
+            entries.add(PieEntry(stat.percentage.toFloat(), "${stat.categoria} (${stat.percentage}%)"))
+
+            // Obtener color de la categoría
+            val colorRes = CategoryHelper.getCategoryColor(stat.categoria)
+            colors.add(ContextCompat.getColor(requireContext(), colorRes))
+        }
+
+        val dataSet = PieDataSet(entries, "").apply {
+            this.colors = colors
+            sliceSpace = 3f
+            selectionShift = 5f
+
+            // Ocultar valores dentro del gráfico
+            setDrawValues(false)
+        }
+
+        val data = PieData(dataSet)
+
+        binding.pieChart.data = data
+        binding.pieChart.invalidate()
     }
 
     /**

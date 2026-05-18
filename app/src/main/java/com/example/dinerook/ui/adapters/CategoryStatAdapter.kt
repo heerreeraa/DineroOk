@@ -42,14 +42,11 @@ class CategoryStatAdapter(
                 tvCategoryName.text = stat.categoria
 
                 // Contador
-                tvCategoryCount.text = "${stat.count} gastos"
+                tvCategoryCount.text = "${stat.count} gastos (${stat.percentage}%)"
 
-                // Monto formateado
-                val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
-                tvCategoryAmount.text = format.format(stat.total)
-
-                // Barra de progreso
-                progressBar.progress = stat.percentage
+                // Monto formateado en euros
+                val amount = String.format(java.util.Locale.getDefault(), "%.2f €", stat.total)
+                tvCategoryAmount.text = amount
 
                 // Icono y color de categoría
                 val iconRes = CategoryHelper.getCategoryIcon(stat.categoria)
@@ -58,7 +55,6 @@ class CategoryStatAdapter(
                 val colorRes = CategoryHelper.getCategoryColor(stat.categoria)
                 val color = ContextCompat.getColor(root.context, colorRes)
                 ivCategoryIcon.setColorFilter(color)
-                progressBar.progressTintList = android.content.res.ColorStateList.valueOf(color)
             }
         }
     }
