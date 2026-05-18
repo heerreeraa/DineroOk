@@ -17,7 +17,7 @@ import java.util.Locale
  */
 class GastoAdapter(
     private val onItemClick: (Gasto) -> Unit,
-    private val onItemLongClick: (Gasto) -> Unit
+    private val onDeleteClick: (Gasto) -> Unit
 ) : ListAdapter<Gasto, GastoAdapter.GastoViewHolder>(GastoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GastoViewHolder {
@@ -43,9 +43,9 @@ class GastoAdapter(
                 // Nombre
                 tvNombre.text = gasto.nombre
 
-                // Cantidad formateada
-                val format = NumberFormat.getCurrencyInstance(Locale("es", "MX"))
-                tvCantidad.text = format.format(gasto.cantidad)
+                // Cantidad formateada en euros
+                val amount = String.format(Locale.getDefault(), "%.2f €", gasto.cantidad)
+                tvCantidad.text = amount
 
                 // Categoría
                 tvCategoria.text = gasto.categoria
@@ -62,14 +62,14 @@ class GastoAdapter(
                 val color = ContextCompat.getColor(root.context, colorRes)
                 ivCategoryIcon.setColorFilter(color)
 
-                // Click listeners
+                // Click en la card -> editar
                 root.setOnClickListener {
                     onItemClick(gasto)
                 }
 
-                root.setOnLongClickListener {
-                    onItemLongClick(gasto)
-                    true
+                // Click en botón eliminar
+                btnDelete.setOnClickListener {
+                    onDeleteClick(gasto)
                 }
             }
         }

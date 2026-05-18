@@ -53,8 +53,8 @@ class GastoListFragment : Fragment() {
                 // Click normal: editar gasto
                 navigateToEdit(gasto)
             },
-            onItemLongClick = { gasto ->
-                // Long click: confirmar eliminación
+            onDeleteClick = { gasto ->
+                // Click en botón eliminar: confirmar eliminación
                 showDeleteDialog(gasto)
             }
         )

@@ -22,7 +22,8 @@
             android:src="@drawable/ic_money"
             app:tint="@color/primary"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Nombre del gasto -->
         <TextView
@@ -37,9 +38,9 @@
             android:textSize="16sp"
             android:textStyle="bold"
             tools:text="Almuerzo"
-            app:layout_constraintEnd_toStartOf="@id/tvCantidad"
+            app:layout_constraintEnd_toStartOf="@id/layoutRight"
             app:layout_constraintStart_toEndOf="@id/ivCategoryIcon"
-            app:layout_constraintTop_toTopOf="@id/ivCategoryIcon" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Categoría -->
         <TextView
@@ -74,18 +75,39 @@
             app:layout_constraintStart_toStartOf="@id/tvNombre"
             app:layout_constraintTop_toBottomOf="@id/tvCategoria" />
 
-        <!-- Cantidad (dinero) -->
-        <TextView
-            android:id="@+id/tvCantidad"
+        <!-- Layout derecho con cantidad y botón eliminar -->
+        <LinearLayout
+            android:id="@+id/layoutRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/error"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="$150.00"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Cantidad (dinero) -->
+            <TextView
+                android:id="@+id/tvCantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/error"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="150.00 €" />
+
+            <!-- Botón eliminar -->
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/gasto_delete"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/error" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
