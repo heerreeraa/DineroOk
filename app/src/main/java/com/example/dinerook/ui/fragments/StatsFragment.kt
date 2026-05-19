@@ -74,36 +74,37 @@ class StatsFragment : Fragment() {
         binding.pieChart.apply {
             setUsePercentValues(true)
             description.isEnabled = false
-            setExtraOffsets(5f, 10f, 5f, 5f)
+            // Menos padding interno para evitar hueco arriba/abajo
+            setExtraOffsets(0f, 0f, 0f, 0f)
 
-            // Configurar el agujero central
+            // Configurar el agujero central (más pequeño para que el gráfico se vea más grande)
             isDrawHoleEnabled = true
             setHoleColor(Color.TRANSPARENT)
-            holeRadius = 55f
-            transparentCircleRadius = 60f
+            holeRadius = 45f
+            transparentCircleRadius = 50f
 
-            // Deshabilitar etiquetas en el centro
             setDrawCenterText(false)
             setDrawEntryLabels(false)
 
-            // Configurar leyenda multilinea
+            // Leyenda a la izquierda ocupando menos alto (menos espacios)
             legend.isEnabled = true
-            legend.textSize = 11f
+            legend.textSize = 13f
             legend.textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
             legend.isWordWrapEnabled = true
-            legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
-            legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
-            legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.LEFT
+            legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.CENTER
+            legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.VERTICAL
             legend.setDrawInside(false)
-            legend.xEntrySpace = 10f
-            legend.yEntrySpace = 5f
+            legend.xEntrySpace = 8f
+            legend.yEntrySpace = 4f
+            legend.formSize = 12f
+            legend.formToTextSpace = 8f
+            legend.maxSizePercent = 0.45f
 
-            // Configurar rotación
             rotationAngle = 0f
             isRotationEnabled = true
-            isHighlightPerTapEnabled = true  // Habilitar highlight al pulsar
+            isHighlightPerTapEnabled = true
 
-            // Animación
             animateY(1000, Easing.EaseInOutQuad)
 
             // Listener para detectar clicks en el gráfico
@@ -149,7 +150,7 @@ class StatsFragment : Fragment() {
 
         // Observar cantidad de gastos
         viewModel.gastosCount.observe(viewLifecycleOwner) { count ->
-            binding.tvTotalCount.text = getString(R.string.stats_count, count)
+            binding.tvTotalCount.text = count.toString()
         }
 
         // Observar todos los gastos para calcular estadísticas por categoría
@@ -169,9 +170,7 @@ class StatsFragment : Fragment() {
         binding.layoutEmpty.isVisible = true
         binding.rvCategoryStats.isVisible = false
         binding.pieChart.isVisible = false
-        binding.tvTotalLabel.isVisible = false
-        binding.tvTotalAmount.isVisible = false
-        binding.tvTotalCount.isVisible = false
+        binding.layoutSummary.isVisible = false
         binding.tvCategoriesTitle.isVisible = false
     }
 
@@ -182,9 +181,7 @@ class StatsFragment : Fragment() {
         binding.layoutEmpty.isVisible = false
         binding.rvCategoryStats.isVisible = true
         binding.pieChart.isVisible = true
-        binding.tvTotalLabel.isVisible = true
-        binding.tvTotalAmount.isVisible = true
-        binding.tvTotalCount.isVisible = true
+        binding.layoutSummary.isVisible = true
         binding.tvCategoriesTitle.isVisible = true
 
         allCategoryStats = calculateCategoryStats(gastos)
@@ -269,4 +266,3 @@ class StatsFragment : Fragment() {
         _binding = null
     }
 }
-

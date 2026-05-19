@@ -71,6 +71,8 @@
     <string name="stats_total">Total Gastado</string>
     <string name="stats_by_category">Por Categoría</string>
     <string name="stats_count">Total de gastos: %d</string>
+    <string name="stats_total_prefix">Total:</string>
+    <string name="stats_count_prefix">Gastos:</string>
 
     <!-- Botones -->
     <string name="btn_yes">Sí</string>
@@ -80,4 +82,3 @@
     <!-- Descripciones -->
     <string name="desc_category_icon">Icono de categoría</string>
 </resources>
-
