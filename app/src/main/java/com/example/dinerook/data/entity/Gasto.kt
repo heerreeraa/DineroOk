@@ -4,18 +4,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Entidad Gasto para Room Database
- * Representa un gasto registrado por el usuario
+ * Entidad Room - Representa un gasto del usuario
  */
 @Entity(tableName = "gastos")
 data class Gasto(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-
     val nombre: String,
     val cantidad: Double,
     val categoria: String,
     val fecha: String,
-    val userEmail: String // Email del usuario propietario del gasto
+    val userEmail: String // Vincula el gasto con su propietario
 )
 

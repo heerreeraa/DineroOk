@@ -4,8 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Entidad User para Room Database
- * Almacena los usuarios registrados
+ * Entidad Room - Representa un usuario registrado
  */
 @Entity(tableName = "users")
 data class User(

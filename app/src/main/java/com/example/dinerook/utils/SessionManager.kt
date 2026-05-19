@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * Gestor de sesión usando SharedPreferences
- * Mantiene el estado de login del usuario
+ * Gestor de sesión - Guarda el estado de login en SharedPreferences
  */
 class SessionManager(context: Context) {
 
@@ -17,9 +16,6 @@ class SessionManager(context: Context) {
         private const val KEY_USER_EMAIL = "userEmail"
     }
 
-    /**
-     * Guarda la sesión del usuario
-     */
     fun saveSession(email: String) {
         prefs.edit().apply {
             putBoolean(KEY_IS_LOGGED_IN, true)
@@ -28,28 +24,12 @@ class SessionManager(context: Context) {
         }
     }
 
-    /**
-     * Verifica si hay una sesión activa
-     */
-    fun isLoggedIn(): Boolean {
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
-    }
+    fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
 
-    /**
-     * Obtiene el email del usuario logueado
-     */
-    fun getUserEmail(): String? {
-        return prefs.getString(KEY_USER_EMAIL, null)
-    }
+    fun getUserEmail(): String? = prefs.getString(KEY_USER_EMAIL, null)
 
-    /**
-     * Cierra la sesión del usuario
-     */
     fun logout() {
-        prefs.edit().apply {
-            clear()
-            apply()
-        }
+        prefs.edit().clear().apply()
     }
 }
 

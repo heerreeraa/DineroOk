@@ -1,8 +1,7 @@
 package com.example.dinerook.ui.login
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dinerook.R
@@ -10,10 +9,10 @@ import com.example.dinerook.databinding.ActivityRegisterBinding
 import com.example.dinerook.utils.Validator
 import com.example.dinerook.viewmodel.AuthResult
 import com.example.dinerook.viewmodel.AuthViewModel
+import com.google.android.material.snackbar.Snackbar
 
 /**
- * Activity de Registro
- * Permite crear nuevas cuentas de usuario
+ * Activity de Registro - Crear nuevas cuentas de usuario
  */
 class RegisterActivity : AppCompatActivity() {
 
@@ -30,20 +29,13 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        binding.btnRegister.setOnClickListener {
-            attemptRegister()
-        }
-
-        // Link para ir a login
-        binding.tvInfo.setOnClickListener {
-            finish() // Volver a LoginActivity
-        }
+        binding.btnRegister.setOnClickListener { attemptRegister() }
+        binding.tvInfo.setOnClickListener { finish() }
     }
 
     private fun setupObservers() {
-        // Observar estado de loading
         authViewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             binding.btnRegister.isEnabled = !isLoading
             binding.btnRegister.text = if (isLoading) "" else getString(R.string.register_button)
         }
@@ -51,29 +43,21 @@ class RegisterActivity : AppCompatActivity() {
         authViewModel.registerResult.observe(this) { result ->
             when (result) {
                 is AuthResult.Success -> {
-                    // Mostrar Snackbar de éxito antes de volver
-                    com.google.android.material.snackbar.Snackbar.make(
-                        binding.root,
-                        getString(R.string.register_success),
-                        com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
-                    ).setBackgroundTint(getColor(R.color.success))
-                    .setTextColor(getColor(R.color.white))
-                    .addCallback(object : com.google.android.material.snackbar.Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: com.google.android.material.snackbar.Snackbar?, event: Int) {
-                            finish() // Volver a login después del Snackbar
-                        }
-                    })
-                    .show()
+                    Snackbar.make(binding.root, getString(R.string.register_success), Snackbar.LENGTH_SHORT)
+                        .setBackgroundTint(getColor(R.color.success))
+                        .setTextColor(getColor(R.color.white))
+                        .addCallback(object : Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                finish()
+                            }
+                        })
+                        .show()
                 }
                 is AuthResult.Error -> {
-                    // Mostrar Snackbar con error
-                    com.google.android.material.snackbar.Snackbar.make(
-                        binding.root,
-                        getString(R.string.register_error_exists),
-                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-                    ).setBackgroundTint(getColor(R.color.error))
-                    .setTextColor(getColor(R.color.white))
-                    .show()
+                    Snackbar.make(binding.root, getString(R.string.register_error_exists), Snackbar.LENGTH_LONG)
+                        .setBackgroundTint(getColor(R.color.error))
+                        .setTextColor(getColor(R.color.white))
+                        .show()
                 }
             }
         }
@@ -109,7 +93,7 @@ class RegisterActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validar confirmación de contraseña
+        // Validar confirmación
         if (Validator.isFieldEmpty(confirmPassword)) {
             binding.tilConfirmPassword.error = getString(R.string.error_password_required)
             isValid = false
@@ -120,7 +104,6 @@ class RegisterActivity : AppCompatActivity() {
 
         if (!isValid) return
 
-        // Intentar registro
         authViewModel.register(email, password)
     }
 }

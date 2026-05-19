@@ -34,6 +34,7 @@ class StatsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: GastoViewModel by viewModels()
+    private lateinit var categoryAdapter: CategoryStatAdapter
 
     // Lista completa de estadísticas para filtrar
     private var allCategoryStats: List<CategoryStat> = emptyList()
@@ -53,8 +54,17 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupRecyclerView()
         setupPieChart()
         setupObservers()
+    }
+
+    /**
+     * Configura el RecyclerView con el adapter
+     */
+    private fun setupRecyclerView() {
+        categoryAdapter = CategoryStatAdapter(emptyList())
+        binding.rvCategoryStats.adapter = categoryAdapter
     }
 
     /**
@@ -191,8 +201,7 @@ class StatsFragment : Fragment() {
      * Actualiza la lista de categorías en el RecyclerView
      */
     private fun updateCategoryList(stats: List<CategoryStat>) {
-        val adapter = CategoryStatAdapter(stats)
-        binding.rvCategoryStats.adapter = adapter
+        categoryAdapter.submitList(stats)
     }
 
     /**

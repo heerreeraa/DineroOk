@@ -13,18 +13,16 @@ import com.example.dinerook.utils.SessionManager
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel para gestionar los datos de Gastos
- * Sigue el patrón MVVM
+ * ViewModel - Gestiona los datos de Gastos y expone LiveData a la UI
+ * Patrón MVVM: La UI observa estos LiveData y se actualiza automáticamente
  */
 class GastoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: GastoRepository
     private val sessionManager: SessionManager = SessionManager(application)
-
-    // Email del usuario actual
     private val currentUserEmail = MutableLiveData<String>()
 
-    // LiveData observables que se actualizan según el usuario
+    // LiveData que la UI observa - se actualizan automáticamente según el usuario
     val allGastos: LiveData<List<Gasto>>
     val totalGastado: LiveData<Double?>
     val gastosCount: LiveData<Int>
@@ -33,10 +31,9 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
         val gastoDao = AppDatabase.getDatabase(application).gastoDao()
         repository = GastoRepository(gastoDao)
 
-        // Establecer el email del usuario actual
         currentUserEmail.value = sessionManager.getUserEmail() ?: ""
 
-        // Usar switchMap para que los LiveData se actualicen cuando cambie el usuario
+        // switchMap: cuando cambia el email, se obtienen los datos del nuevo usuario
         allGastos = currentUserEmail.switchMap { email ->
             repository.getAllGastosByUser(email)
         }
@@ -50,49 +47,29 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /**
-     * Actualiza el usuario actual (útil cuando cambia la sesión)
-     */
     fun refreshCurrentUser() {
         currentUserEmail.value = sessionManager.getUserEmail() ?: ""
     }
 
-    /**
-     * Inserta un nuevo gasto para el usuario actual
-     */
     fun insertGasto(gasto: Gasto) = viewModelScope.launch {
         val userEmail = sessionManager.getUserEmail() ?: return@launch
-        val gastoConUsuario = gasto.copy(userEmail = userEmail)
-        repository.insertGasto(gastoConUsuario)
+        repository.insertGasto(gasto.copy(userEmail = userEmail))
     }
 
-    /**
-     * Actualiza un gasto existente
-     */
     fun updateGasto(gasto: Gasto) = viewModelScope.launch {
         val userEmail = sessionManager.getUserEmail() ?: return@launch
-        val gastoConUsuario = gasto.copy(userEmail = userEmail)
-        repository.updateGasto(gastoConUsuario)
+        repository.updateGasto(gasto.copy(userEmail = userEmail))
     }
 
-    /**
-     * Elimina un gasto
-     */
     fun deleteGasto(gasto: Gasto) = viewModelScope.launch {
         repository.deleteGasto(gasto)
     }
 
-    /**
-     * Obtiene gastos por categoría del usuario actual
-     */
     fun getGastosByCategoria(categoria: String): LiveData<List<Gasto>> {
         val userEmail = sessionManager.getUserEmail() ?: ""
         return repository.getGastosByCategoria(categoria, userEmail)
     }
 
-    /**
-     * Obtiene un gasto por su ID del usuario actual
-     */
     suspend fun getGastoById(id: Int): Gasto? {
         val userEmail = sessionManager.getUserEmail() ?: return null
         return repository.getGastoById(id, userEmail)

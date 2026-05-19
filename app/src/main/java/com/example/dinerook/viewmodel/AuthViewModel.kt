@@ -10,7 +10,7 @@ import com.example.dinerook.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel para autenticación (Login y Registro)
+ * ViewModel - Gestiona la autenticación (Login y Registro)
  */
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -35,10 +35,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val user = repository.login(email, password)
             _isLoading.value = false
-            if (user != null) {
-                _loginResult.value = AuthResult.Success
+            _loginResult.value = if (user != null) {
+                AuthResult.Success
             } else {
-                _loginResult.value = AuthResult.Error("Email o contraseña incorrectos")
+                AuthResult.Error("Email o contraseña incorrectos")
             }
         }
     }
@@ -48,15 +48,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val success = repository.registerUser(email, password)
             _isLoading.value = false
-            if (success) {
-                _registerResult.value = AuthResult.Success
+            _registerResult.value = if (success) {
+                AuthResult.Success
             } else {
-                _registerResult.value = AuthResult.Error("Este email ya está registrado")
+                AuthResult.Error("Este email ya está registrado")
             }
         }
     }
 }
 
+/**
+ * Resultado de autenticación - Success o Error con mensaje
+ */
 sealed class AuthResult {
     object Success : AuthResult()
     data class Error(val message: String) : AuthResult()

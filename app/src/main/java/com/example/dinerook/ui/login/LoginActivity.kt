@@ -2,6 +2,7 @@ package com.example.dinerook.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,10 +13,10 @@ import com.example.dinerook.utils.SessionManager
 import com.example.dinerook.utils.Validator
 import com.example.dinerook.viewmodel.AuthResult
 import com.example.dinerook.viewmodel.AuthViewModel
+import com.google.android.material.snackbar.Snackbar
 
 /**
- * Activity de Login
- * Gestiona la autenticación del usuario con validaciones
+ * Activity de Login - Autenticación del usuario
  */
 class LoginActivity : AppCompatActivity() {
 
@@ -72,9 +73,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observar estado de loading
         authViewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             binding.btnLogin.isEnabled = !isLoading
             binding.btnLogin.text = if (isLoading) "" else getString(R.string.login_button)
         }
@@ -88,17 +88,12 @@ class LoginActivity : AppCompatActivity() {
                     navigateToMain()
                 }
                 is AuthResult.Error -> {
-                    // Mostrar Snackbar con opción de reintentar
-                    com.google.android.material.snackbar.Snackbar.make(
-                        binding.root,
-                        getString(R.string.login_error),
-                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-                    ).setAction("Reintentar") {
-                        attemptLogin()
-                    }.setBackgroundTint(getColor(R.color.error))
-                    .setTextColor(getColor(R.color.white))
-                    .setActionTextColor(getColor(R.color.white))
-                    .show()
+                    Snackbar.make(binding.root, getString(R.string.login_error), Snackbar.LENGTH_LONG)
+                        .setAction("Reintentar") { attemptLogin() }
+                        .setBackgroundTint(getColor(R.color.error))
+                        .setTextColor(getColor(R.color.white))
+                        .setActionTextColor(getColor(R.color.white))
+                        .show()
                 }
             }
         }

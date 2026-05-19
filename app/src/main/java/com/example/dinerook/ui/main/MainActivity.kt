@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -49,6 +50,11 @@ class MainActivity : AppCompatActivity() {
 
         // Configurar Toolbar
         setSupportActionBar(binding.toolbar)
+
+        // Forzar icono de overflow (3 puntitos) en blanco
+        binding.toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vert)?.mutate()?.apply {
+            setTint(ContextCompat.getColor(this@MainActivity, R.color.white))
+        }
 
         // Configurar Navigation - usando supportFragmentManager
         val navHostFragment = supportFragmentManager
@@ -174,4 +180,3 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
-

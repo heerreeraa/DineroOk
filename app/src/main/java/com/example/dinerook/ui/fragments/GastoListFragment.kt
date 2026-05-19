@@ -58,7 +58,11 @@ class GastoListFragment : Fragment(), SortToggleListener {
         setupObservers()
         setupListeners()
 
-        // Ocultar menú de ordenación por defecto
+        // Estado inicial: orden por defecto (fecha descendente) y panel oculto
+        currentSortType = SortType.DATE
+        isAscending = false
+        updateSortUI()
+
         binding.layoutSort.isVisible = false
         isSortMenuVisible = false
     }
@@ -77,7 +81,7 @@ class GastoListFragment : Fragment(), SortToggleListener {
             currentSortType = SortType.DATE
             isAscending = false
             updateSortUI()
-            applySorting()
+            applySorting(scrollToTop = true)
         }
     }
 
@@ -129,45 +133,43 @@ class GastoListFragment : Fragment(), SortToggleListener {
             isAscending = false
         }
         updateSortUI()
-        applySorting()
+        applySorting(scrollToTop = true)
     }
 
     /**
      * Actualiza la UI de los botones de ordenación
      */
     private fun updateSortUI() {
-        val activeColor = ContextCompat.getColor(requireContext(), R.color.primary)
-        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
-        val arrowUp = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_up)
-        val arrowDown = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_down)
+        val context = requireContext()
+        val activeColor = ContextCompat.getColor(context, R.color.primary)
+        val inactiveColor = ContextCompat.getColor(context, R.color.text_secondary)
 
-        // Resetear todos a inactivo
-        listOf(binding.tvSortDate, binding.tvSortCategory, binding.tvSortAmount).forEach { tv ->
-            tv.setTextColor(inactiveColor)
-            tv.setTypeface(null, android.graphics.Typeface.NORMAL)
-            val inactiveArrow = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_down)
-            inactiveArrow?.setTint(inactiveColor)
-            tv.setCompoundDrawablesWithIntrinsicBounds(null, null, inactiveArrow, null)
+        // Lista de TextViews y sus tipos
+        val sortViews = listOf(
+            binding.tvSortDate to SortType.DATE,
+            binding.tvSortCategory to SortType.CATEGORY,
+            binding.tvSortAmount to SortType.AMOUNT
+        )
+
+        sortViews.forEach { (tv, type) ->
+            val isActive = currentSortType == type
+            val color = if (isActive) activeColor else inactiveColor
+            val arrowRes = if (isActive && isAscending) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+
+            tv.setTextColor(color)
+            tv.setTypeface(null, if (isActive) android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+
+            ContextCompat.getDrawable(context, arrowRes)?.mutate()?.let { arrow ->
+                arrow.setTint(color)
+                tv.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null)
+            }
         }
-
-        // Activar el seleccionado
-        val activeView: TextView = when (currentSortType) {
-            SortType.DATE -> binding.tvSortDate
-            SortType.CATEGORY -> binding.tvSortCategory
-            SortType.AMOUNT -> binding.tvSortAmount
-        }
-
-        activeView.setTextColor(activeColor)
-        activeView.setTypeface(null, android.graphics.Typeface.BOLD)
-        val arrow = if (isAscending) arrowUp?.mutate() else arrowDown?.mutate()
-        arrow?.setTint(activeColor)
-        activeView.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null)
     }
 
     /**
      * Aplica la ordenación según el tipo seleccionado
      */
-    private fun applySorting() {
+    private fun applySorting(scrollToTop: Boolean = false) {
         val sortedList = when (currentSortType) {
             SortType.DATE -> {
                 if (isAscending) currentGastos.sortedBy { it.fecha }
@@ -182,7 +184,12 @@ class GastoListFragment : Fragment(), SortToggleListener {
                 else currentGastos.sortedByDescending { it.cantidad }
             }
         }
-        adapter.submitList(sortedList)
+
+        adapter.submitList(sortedList) {
+            if (scrollToTop && sortedList.isNotEmpty()) {
+                binding.rvGastos.scrollToPosition(0)
+            }
+        }
     }
 
     /**
@@ -206,9 +213,9 @@ class GastoListFragment : Fragment(), SortToggleListener {
                 isSortMenuVisible = false
             }
 
-            // Aplicar ordenación actual (por defecto fecha desc)
+            // Siempre aplica el orden actual (por defecto fecha desc)
             if (gastos.isNotEmpty()) {
-                applySorting()
+                applySorting(scrollToTop = false)
             }
         }
     }
@@ -292,4 +299,3 @@ class GastoListFragment : Fragment(), SortToggleListener {
         _binding = null
     }
 }
-

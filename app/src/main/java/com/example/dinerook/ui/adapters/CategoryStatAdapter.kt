@@ -3,19 +3,24 @@ package com.example.dinerook.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dinerook.data.entity.CategoryStat
 import com.example.dinerook.databinding.ItemCategoryStatBinding
 import com.example.dinerook.utils.CategoryHelper
-import java.text.NumberFormat
 import java.util.Locale
 
 /**
- * Adapter para mostrar estadísticas por categoría
+ * Adapter para mostrar estadísticas por categoría (usa ListAdapter para eficiencia)
  */
 class CategoryStatAdapter(
-    private val stats: List<CategoryStat>
-) : RecyclerView.Adapter<CategoryStatAdapter.StatViewHolder>() {
+    stats: List<CategoryStat> = emptyList()
+) : ListAdapter<CategoryStat, CategoryStatAdapter.StatViewHolder>(CategoryStatDiffCallback()) {
+
+    init {
+        submitList(stats)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatViewHolder {
         val binding = ItemCategoryStatBinding.inflate(
@@ -27,10 +32,8 @@ class CategoryStatAdapter(
     }
 
     override fun onBindViewHolder(holder: StatViewHolder, position: Int) {
-        holder.bind(stats[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount() = stats.size
 
     class StatViewHolder(
         private val binding: ItemCategoryStatBinding
@@ -38,25 +41,25 @@ class CategoryStatAdapter(
 
         fun bind(stat: CategoryStat) {
             binding.apply {
-                // Nombre de categoría
                 tvCategoryName.text = stat.categoria
-
-                // Contador
                 tvCategoryCount.text = "${stat.count} gastos (${stat.percentage}%)"
+                tvCategoryAmount.text = String.format(Locale.getDefault(), "%.2f €", stat.total)
 
-                // Monto formateado en euros
-                val amount = String.format(java.util.Locale.getDefault(), "%.2f €", stat.total)
-                tvCategoryAmount.text = amount
-
-                // Icono y color de categoría
                 val iconRes = CategoryHelper.getCategoryIcon(stat.categoria)
                 ivCategoryIcon.setImageResource(iconRes)
 
                 val colorRes = CategoryHelper.getCategoryColor(stat.categoria)
-                val color = ContextCompat.getColor(root.context, colorRes)
-                ivCategoryIcon.setColorFilter(color)
+                ivCategoryIcon.setColorFilter(ContextCompat.getColor(root.context, colorRes))
             }
         }
+    }
+
+    class CategoryStatDiffCallback : DiffUtil.ItemCallback<CategoryStat>() {
+        override fun areItemsTheSame(oldItem: CategoryStat, newItem: CategoryStat) =
+            oldItem.categoria == newItem.categoria
+
+        override fun areContentsTheSame(oldItem: CategoryStat, newItem: CategoryStat) =
+            oldItem == newItem
     }
 }
 

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dinerook.data.entity.Gasto
 import com.example.dinerook.databinding.ItemGastoBinding
 import com.example.dinerook.utils.CategoryHelper
-import java.text.NumberFormat
 import java.util.Locale
 
 /**

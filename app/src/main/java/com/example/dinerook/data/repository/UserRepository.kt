@@ -4,14 +4,14 @@ import com.example.dinerook.data.dao.UserDao
 import com.example.dinerook.data.entity.User
 
 /**
- * Repository para gestionar operaciones de usuarios
+ * Repository - Intermediario entre ViewModel y DAO para operaciones de Usuarios
  */
 class UserRepository(private val userDao: UserDao) {
 
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
             if (userDao.emailExists(email) > 0) {
-                false
+                false // Email ya existe
             } else {
                 userDao.insertUser(User(email, password))
                 true
@@ -21,12 +21,10 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    suspend fun login(email: String, password: String): User? {
-        return userDao.login(email, password)
-    }
+    suspend fun login(email: String, password: String): User? =
+        userDao.login(email, password)
 
-    suspend fun emailExists(email: String): Boolean {
-        return userDao.emailExists(email) > 0
-    }
+    suspend fun emailExists(email: String): Boolean =
+        userDao.emailExists(email) > 0
 }
 

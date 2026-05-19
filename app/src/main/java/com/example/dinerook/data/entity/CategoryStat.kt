@@ -1,7 +1,7 @@
 package com.example.dinerook.data.entity
 
 /**
- * Clase de datos para estadísticas por categoría
+ * Modelo de datos para estadísticas por categoría (no es entidad Room)
  */
 data class CategoryStat(
     val categoria: String,

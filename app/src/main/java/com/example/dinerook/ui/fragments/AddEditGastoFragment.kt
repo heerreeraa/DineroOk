@@ -49,6 +49,11 @@ class AddEditGastoFragment : Fragment() {
         gastoId = arguments?.getInt("gastoId", -1) ?: -1
         isEditMode = gastoId != -1
 
+        // Título dinámico en la Toolbar
+        val titleRes = if (isEditMode) R.string.gasto_edit_title else R.string.gasto_add_title
+        requireActivity().title = getString(titleRes)
+        (activity as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.title = getString(titleRes)
+
         setupCategorySpinner()
         setupDatePicker()
         setupListeners()
@@ -238,22 +243,9 @@ class AddEditGastoFragment : Fragment() {
         }, 500)
     }
 
-    /**
-     * Muestra un mensaje de éxito al usuario con estilo verde
-     */
     private fun showSuccessMessage(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
             .setBackgroundTint(requireContext().getColor(R.color.success))
-            .setTextColor(requireContext().getColor(R.color.white))
-            .show()
-    }
-
-    /**
-     * Muestra un mensaje de error al usuario con estilo rojo
-     */
-    private fun showErrorMessage(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-            .setBackgroundTint(requireContext().getColor(R.color.error))
             .setTextColor(requireContext().getColor(R.color.white))
             .show()
     }
@@ -263,4 +255,3 @@ class AddEditGastoFragment : Fragment() {
         _binding = null
     }
 }
-

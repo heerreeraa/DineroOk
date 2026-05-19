@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.DineroOk" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
@@ -7,9 +7,20 @@
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorError">@color/error</item>
         <item name="android:windowBackground">@color/background</item>
+
+        <!-- Tintes por defecto para iconos en toolbar/overflow -->
+        <item name="colorControlNormal">@color/white</item>
     </style>
 
     <style name="Theme.DineroOk" parent="Base.Theme.DineroOk" />
+
+    <!-- ThemeOverlay para el popup del menú (3 puntitos) -->
+    <style name="ThemeOverlay_DineroOk_Popup" parent="ThemeOverlay.Material3">
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:colorBackground">@color/background_light</item>
+    </style>
 
     <!-- Theme without ActionBar for LoginActivity -->
     <style name="Theme.DineroOk.NoActionBar">
