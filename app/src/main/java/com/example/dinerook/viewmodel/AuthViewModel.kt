@@ -9,9 +9,6 @@ import com.example.dinerook.data.database.AppDatabase
 import com.example.dinerook.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel - Gestiona la autenticación (Login y Registro)
- */
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: UserRepository
@@ -57,11 +54,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-/**
- * Resultado de autenticación - Success o Error con mensaje
- */
 sealed class AuthResult {
     object Success : AuthResult()
     data class Error(val message: String) : AuthResult()
 }
-

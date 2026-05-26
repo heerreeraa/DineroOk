@@ -2,9 +2,6 @@ package com.example.dinerook.utils
 
 import android.util.Patterns
 
-/**
- * Utilidad para validaciones de formularios
- */
 object Validator {
 
     fun isFieldEmpty(text: String?): Boolean = text.isNullOrBlank()
@@ -28,4 +25,3 @@ object Validator {
         return password.length >= 6
     }
 }
-

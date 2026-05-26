@@ -19,9 +19,6 @@ import com.example.dinerook.ui.main.SortToggleListener
 import com.example.dinerook.viewmodel.GastoViewModel
 import com.google.android.material.snackbar.Snackbar
 
-/**
- * Fragment que muestra la lista de gastos
- */
 class GastoListFragment : Fragment(), SortToggleListener {
 
     private var _binding: FragmentGastoListBinding? = null
@@ -30,15 +27,12 @@ class GastoListFragment : Fragment(), SortToggleListener {
     private val viewModel: GastoViewModel by viewModels()
     private lateinit var adapter: GastoAdapter
 
-    // Lista original de gastos para ordenar
     private var currentGastos: List<Gasto> = emptyList()
 
-    // Tipo de ordenación actual
     private enum class SortType { DATE, CATEGORY, AMOUNT }
     private var currentSortType = SortType.DATE
-    private var isAscending = false  // false = descendente (por defecto)
+    private var isAscending = false
 
-    // Estado del menú de ordenación
     private var isSortMenuVisible = false
 
     override fun onCreateView(
@@ -58,7 +52,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         setupObservers()
         setupListeners()
 
-        // Estado inicial: orden por defecto (fecha descendente) y panel oculto
         currentSortType = SortType.DATE
         isAscending = false
         updateSortUI()
@@ -67,9 +60,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         isSortMenuVisible = false
     }
 
-    /**
-     * Implementación de SortToggleListener - Toggle del menú de ordenación
-     */
     override fun toggleSortMenu() {
         if (currentGastos.isEmpty()) return
 
@@ -77,7 +67,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         binding.layoutSort.isVisible = isSortMenuVisible
 
         if (!isSortMenuVisible) {
-            // Al cerrar, volver al orden por defecto (fecha descendente)
             currentSortType = SortType.DATE
             isAscending = false
             updateSortUI()
@@ -85,17 +74,12 @@ class GastoListFragment : Fragment(), SortToggleListener {
         }
     }
 
-    /**
-     * Configura el RecyclerView con el adapter
-     */
     private fun setupRecyclerView() {
         adapter = GastoAdapter(
             onItemClick = { gasto ->
-                // Click normal: editar gasto
                 navigateToEdit(gasto)
             },
             onDeleteClick = { gasto ->
-                // Click en botón eliminar: confirmar eliminación
                 showDeleteDialog(gasto)
             }
         )
@@ -103,9 +87,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         binding.rvGastos.adapter = adapter
     }
 
-    /**
-     * Configura los botones de ordenación
-     */
     private fun setupSortButtons() {
         binding.tvSortDate.setOnClickListener {
             onSortClicked(SortType.DATE)
@@ -120,15 +101,10 @@ class GastoListFragment : Fragment(), SortToggleListener {
         }
     }
 
-    /**
-     * Maneja el click en un botón de ordenación
-     */
     private fun onSortClicked(sortType: SortType) {
         if (currentSortType == sortType) {
-            // Si es el mismo tipo, cambiar dirección
             isAscending = !isAscending
         } else {
-            // Si es diferente tipo, seleccionar y poner descendente por defecto
             currentSortType = sortType
             isAscending = false
         }
@@ -136,15 +112,11 @@ class GastoListFragment : Fragment(), SortToggleListener {
         applySorting(scrollToTop = true)
     }
 
-    /**
-     * Actualiza la UI de los botones de ordenación
-     */
     private fun updateSortUI() {
         val context = requireContext()
         val activeColor = ContextCompat.getColor(context, R.color.primary)
         val inactiveColor = ContextCompat.getColor(context, R.color.text_secondary)
 
-        // Lista de TextViews y sus tipos
         val sortViews = listOf(
             binding.tvSortDate to SortType.DATE,
             binding.tvSortCategory to SortType.CATEGORY,
@@ -166,9 +138,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         }
     }
 
-    /**
-     * Aplica la ordenación según el tipo seleccionado
-     */
     private fun applySorting(scrollToTop: Boolean = false) {
         val sortedList = when (currentSortType) {
             SortType.DATE -> {
@@ -192,55 +161,36 @@ class GastoListFragment : Fragment(), SortToggleListener {
         }
     }
 
-    /**
-     * Observa cambios en el ViewModel
-     */
     private fun setupObservers() {
         viewModel.allGastos.observe(viewLifecycleOwner) { gastos ->
-            // Ocultar loading
             binding.progressBar.isVisible = false
 
-            // Guardar lista original
             currentGastos = gastos
 
-            // Mostrar/ocultar lista vacía
             binding.layoutEmpty.isVisible = gastos.isEmpty()
             binding.rvGastos.isVisible = gastos.isNotEmpty()
 
-            // Si no hay gastos, ocultar menú de ordenación
             if (gastos.isEmpty()) {
                 binding.layoutSort.isVisible = false
                 isSortMenuVisible = false
             }
 
-            // Siempre aplica el orden actual (por defecto fecha desc)
             if (gastos.isNotEmpty()) {
                 applySorting(scrollToTop = false)
             }
         }
     }
 
-    /**
-     * Configura los listeners de la UI
-     */
     private fun setupListeners() {
-        binding.fabAdd.setOnClickListener {
-            navigateToAdd()
-        }
+        binding.fabAdd.setOnClickListener { navigateToAdd() }
     }
 
-    /**
-     * Navega al fragment para agregar un nuevo gasto
-     */
     private fun navigateToAdd() {
         findNavController().navigate(
             R.id.action_gastoList_to_addEdit
         )
     }
 
-    /**
-     * Navega al fragment para editar un gasto
-     */
     private fun navigateToEdit(gasto: Gasto) {
         val bundle = Bundle().apply {
             putInt("gastoId", gasto.id)
@@ -251,9 +201,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         )
     }
 
-    /**
-     * Muestra diálogo de confirmación para eliminar
-     */
     private fun showDeleteDialog(gasto: Gasto) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.gasto_delete))
@@ -265,9 +212,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
             .show()
     }
 
-    /**
-     * Elimina un gasto y muestra mensaje con opción de deshacer
-     */
     private fun deleteGasto(gasto: Gasto) {
         viewModel.deleteGasto(gasto)
 
@@ -279,7 +223,6 @@ class GastoListFragment : Fragment(), SortToggleListener {
         .setBackgroundTint(requireContext().getColor(R.color.error))
         .setTextColor(requireContext().getColor(R.color.white))
         .setAction("Deshacer") {
-            // Restaurar el gasto eliminado
             viewModel.insertGasto(gasto)
             Snackbar.make(
                 binding.root,

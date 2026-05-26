@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.dinerook.data.entity.Gasto
 
-/**
- * DAO - Interfaz que define las operaciones de base de datos para Gastos
- */
 @Dao
 interface GastoDao {
 
@@ -34,4 +31,3 @@ interface GastoDao {
     @Query("SELECT COUNT(*) FROM gastos WHERE userEmail = :userEmail")
     fun getGastosCountByUser(userEmail: String): LiveData<Int>
 }
-

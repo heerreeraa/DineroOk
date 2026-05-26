@@ -12,17 +12,12 @@ import com.example.dinerook.data.repository.GastoRepository
 import com.example.dinerook.utils.SessionManager
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel - Gestiona los datos de Gastos y expone LiveData a la UI
- * Patrón MVVM: La UI observa estos LiveData y se actualiza automáticamente
- */
 class GastoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: GastoRepository
     private val sessionManager: SessionManager = SessionManager(application)
     private val currentUserEmail = MutableLiveData<String>()
 
-    // LiveData que la UI observa - se actualizan automáticamente según el usuario
     val allGastos: LiveData<List<Gasto>>
     val totalGastado: LiveData<Double?>
     val gastosCount: LiveData<Int>
@@ -33,7 +28,6 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
 
         currentUserEmail.value = sessionManager.getUserEmail() ?: ""
 
-        // switchMap: cuando cambia el email, se obtienen los datos del nuevo usuario
         allGastos = currentUserEmail.switchMap { email ->
             repository.getAllGastosByUser(email)
         }
@@ -75,4 +69,3 @@ class GastoViewModel(application: Application) : AndroidViewModel(application) {
         return repository.getGastoById(id, userEmail)
     }
 }
-

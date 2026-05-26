@@ -19,9 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Fragment para agregar o editar un gasto
- */
 class AddEditGastoFragment : Fragment() {
 
     private var _binding: FragmentAddEditGastoBinding? = null
@@ -45,11 +42,9 @@ class AddEditGastoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Obtener argumentos
         gastoId = arguments?.getInt("gastoId", -1) ?: -1
         isEditMode = gastoId != -1
 
-        // Título dinámico en la Toolbar
         val titleRes = if (isEditMode) R.string.gasto_edit_title else R.string.gasto_add_title
         requireActivity().title = getString(titleRes)
         (activity as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.title = getString(titleRes)
@@ -61,14 +56,10 @@ class AddEditGastoFragment : Fragment() {
         if (isEditMode) {
             loadGasto()
         } else {
-            // Establecer fecha actual por defecto
             updateFechaField()
         }
     }
 
-    /**
-     * Configura el Spinner de categorías
-     */
     private fun setupCategorySpinner() {
         val categories = CategoryHelper.getCategories()
         val adapter = ArrayAdapter(
@@ -78,15 +69,11 @@ class AddEditGastoFragment : Fragment() {
         )
         binding.spinnerCategoria.setAdapter(adapter)
 
-        // Seleccionar primera categoría por defecto
         if (!isEditMode && categories.isNotEmpty()) {
             binding.spinnerCategoria.setText(categories[0], false)
         }
     }
 
-    /**
-     * Configura el DatePicker para seleccionar fecha
-     */
     private fun setupDatePicker() {
         binding.etFecha.setOnClickListener {
             showDatePicker()
@@ -97,9 +84,6 @@ class AddEditGastoFragment : Fragment() {
         }
     }
 
-    /**
-     * Muestra el diálogo de selección de fecha
-     */
     private fun showDatePicker() {
         DatePickerDialog(
             requireContext(),
@@ -113,17 +97,11 @@ class AddEditGastoFragment : Fragment() {
         ).show()
     }
 
-    /**
-     * Actualiza el campo de fecha con el valor del calendario
-     */
     private fun updateFechaField() {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         binding.etFecha.setText(format.format(calendar.time))
     }
 
-    /**
-     * Configura los listeners de los botones
-     */
     private fun setupListeners() {
         binding.btnSave.setOnClickListener {
             if (validateForm()) {
@@ -136,13 +114,9 @@ class AddEditGastoFragment : Fragment() {
         }
     }
 
-    /**
-     * Carga los datos del gasto en modo edición
-     */
     private var currentGasto: Gasto? = null
 
     private fun loadGasto() {
-        // Observar allGastos para obtener el gasto a editar
         viewModel.allGastos.observe(viewLifecycleOwner) { gastos ->
             val gasto = gastos.find { it.id == gastoId }
             gasto?.let {
@@ -152,7 +126,6 @@ class AddEditGastoFragment : Fragment() {
                 binding.spinnerCategoria.setText(it.categoria, false)
                 binding.etFecha.setText(it.fecha)
 
-                // Actualizar el calendario
                 try {
                     val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     calendar.time = format.parse(it.fecha) ?: Date()
@@ -163,40 +136,32 @@ class AddEditGastoFragment : Fragment() {
         }
     }
 
-    /**
-     * Valida el formulario
-     */
     private fun validateForm(): Boolean {
         var isValid = true
 
-        // Limpiar errores previos
         binding.tilNombre.error = null
         binding.tilCantidad.error = null
         binding.tilCategoria.error = null
         binding.tilFecha.error = null
 
-        // Validar nombre
         val nombre = binding.etNombre.text.toString().trim()
         if (Validator.isFieldEmpty(nombre)) {
             binding.tilNombre.error = getString(R.string.error_field_required)
             isValid = false
         }
 
-        // Validar cantidad
         val cantidadStr = binding.etCantidad.text.toString().trim()
         if (!Validator.isValidAmount(cantidadStr)) {
             binding.tilCantidad.error = getString(R.string.error_amount_invalid)
             isValid = false
         }
 
-        // Validar categoría
         val categoria = binding.spinnerCategoria.text.toString().trim()
         if (Validator.isFieldEmpty(categoria)) {
             binding.tilCategoria.error = getString(R.string.error_field_required)
             isValid = false
         }
 
-        // Validar fecha
         val fecha = binding.etFecha.text.toString().trim()
         if (Validator.isFieldEmpty(fecha)) {
             binding.tilFecha.error = getString(R.string.error_field_required)
@@ -206,11 +171,7 @@ class AddEditGastoFragment : Fragment() {
         return isValid
     }
 
-    /**
-     * Guarda el gasto (crear o actualizar)
-     */
     private fun saveGasto() {
-        // Mostrar loading
         binding.progressBar.visibility = android.view.View.VISIBLE
         binding.btnSave.isEnabled = false
         binding.btnSave.text = ""
@@ -221,7 +182,6 @@ class AddEditGastoFragment : Fragment() {
         val fecha = binding.etFecha.text.toString().trim()
 
         if (isEditMode && currentGasto != null) {
-            // Actualizar gasto existente manteniendo el userEmail original
             val gasto = currentGasto!!.copy(
                 nombre = nombre,
                 cantidad = cantidad,
@@ -231,13 +191,11 @@ class AddEditGastoFragment : Fragment() {
             viewModel.updateGasto(gasto)
             showSuccessMessage(getString(R.string.gasto_update_success))
         } else {
-            // Crear nuevo gasto (el ViewModel añadirá el userEmail automáticamente)
             val gasto = Gasto(0, nombre, cantidad, categoria, fecha, "")
             viewModel.insertGasto(gasto)
             showSuccessMessage(getString(R.string.gasto_save_success))
         }
 
-        // Volver atrás después de un pequeño delay para que se vea el feedback
         binding.root.postDelayed({
             findNavController().navigateUp()
         }, 500)

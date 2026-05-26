@@ -11,9 +11,6 @@ import com.example.dinerook.viewmodel.AuthResult
 import com.example.dinerook.viewmodel.AuthViewModel
 import com.google.android.material.snackbar.Snackbar
 
-/**
- * Activity de Registro - Crear nuevas cuentas de usuario
- */
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
@@ -68,14 +65,12 @@ class RegisterActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
-        // Limpiar errores previos
         binding.tilEmail.error = null
         binding.tilPassword.error = null
         binding.tilConfirmPassword.error = null
 
         var isValid = true
 
-        // Validar email
         if (Validator.isFieldEmpty(email)) {
             binding.tilEmail.error = getString(R.string.error_email_required)
             isValid = false
@@ -84,7 +79,6 @@ class RegisterActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validar contraseña
         if (Validator.isFieldEmpty(password)) {
             binding.tilPassword.error = getString(R.string.error_password_required)
             isValid = false
@@ -93,7 +87,6 @@ class RegisterActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validar confirmación
         if (Validator.isFieldEmpty(confirmPassword)) {
             binding.tilConfirmPassword.error = getString(R.string.error_password_required)
             isValid = false
@@ -107,4 +100,3 @@ class RegisterActivity : AppCompatActivity() {
         authViewModel.register(email, password)
     }
 }
-

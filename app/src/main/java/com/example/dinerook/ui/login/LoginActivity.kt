@@ -61,14 +61,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        binding.btnLogin.setOnClickListener {
-            attemptLogin()
-        }
-
-        // Link para ir a registro
+        binding.btnLogin.setOnClickListener { attemptLogin() }
         binding.tvInfo.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
@@ -99,20 +94,15 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Intenta realizar el login con validaciones
-     */
     private fun attemptLogin() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
-        // Limpiar errores previos
         binding.tilEmail.error = null
         binding.tilPassword.error = null
 
         var isValid = true
 
-        // Validar email
         if (Validator.isFieldEmpty(email)) {
             binding.tilEmail.error = getString(R.string.error_email_required)
             isValid = false
@@ -121,7 +111,6 @@ class LoginActivity : AppCompatActivity() {
             isValid = false
         }
 
-        // Validar contraseña
         if (Validator.isFieldEmpty(password)) {
             binding.tilPassword.error = getString(R.string.error_password_required)
             isValid = false
@@ -132,14 +121,11 @@ class LoginActivity : AppCompatActivity() {
 
         if (!isValid) return
 
-        // Intentar login con base de datos
         authViewModel.login(email, password)
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 }
-

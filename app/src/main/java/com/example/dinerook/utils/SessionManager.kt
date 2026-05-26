@@ -3,9 +3,6 @@ package com.example.dinerook.utils
 import android.content.Context
 import android.content.SharedPreferences
 
-/**
- * Gestor de sesión - Guarda el estado de login en SharedPreferences
- */
 class SessionManager(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -32,4 +29,3 @@ class SessionManager(context: Context) {
         prefs.edit().clear().apply()
     }
 }
-

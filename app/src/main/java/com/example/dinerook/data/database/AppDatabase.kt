@@ -9,9 +9,6 @@ import com.example.dinerook.data.dao.UserDao
 import com.example.dinerook.data.entity.Gasto
 import com.example.dinerook.data.entity.User
 
-/**
- * Base de datos principal de la aplicación
- */
 @Database(
     entities = [Gasto::class, User::class],
     version = 3,
@@ -26,9 +23,6 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        /**
-         * Obtiene la instancia singleton de la base de datos
-         */
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -44,4 +38,3 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
-

@@ -4,10 +4,6 @@ import androidx.lifecycle.LiveData
 import com.example.dinerook.data.dao.GastoDao
 import com.example.dinerook.data.entity.Gasto
 
-/**
- * Repository - Intermediario entre ViewModel y DAO para operaciones de Gastos
- * Abstrae la fuente de datos del ViewModel
- */
 class GastoRepository(private val gastoDao: GastoDao) {
 
     fun getAllGastosByUser(userEmail: String): LiveData<List<Gasto>> =
@@ -34,4 +30,3 @@ class GastoRepository(private val gastoDao: GastoDao) {
     fun getGastosByCategoria(categoria: String, userEmail: String): LiveData<List<Gasto>> =
         gastoDao.getGastosByCategoria(categoria, userEmail)
 }
-
